@@ -1,6 +1,6 @@
 #include "headers/arrays.h"
 
-boolean array_is_ok(void* input_) { return (input_ != WRONG_POINTER); }
+boolean array_is_ok(const void* input_) { return (input_ != WRONG_POINTER); }
 
 void print_array(void* input_, const size_t size_, const type type_)
 {
@@ -16,9 +16,9 @@ void print_array(void* input_, const size_t size_, const type type_)
 	print_array_start_end_internal(FALSE);
 }
 
-void* get_array_value(void* array_, const size_t i_, const type type_) { return ((array_is_ok(array_) && type_is_ok(type_)) ? get_array_value_internal(array_, i_, type_) : WRONG_VALUE); }
+void* get_array_value(const void* array_, const size_t i_, const type type_) { return ((array_is_ok(array_) && type_is_ok(type_)) ? get_array_value_internal(array_, i_, type_) : WRONG_VALUE); }
 
-void* get_array_value_internal(void* array_, const size_t i_, const type type_)
+void* get_array_value_internal(const void* array_, const size_t i_, const type type_)
 {
 	void* output = WRONG_VALUE;
 
@@ -34,14 +34,14 @@ void* get_array_value_internal(void* array_, const size_t i_, const type type_)
 	return output;
 }
 
-void print_array_start_end_internal(boolean is_start_)
+void print_array_start_end_internal(const boolean is_start_)
 {
 	print_string_internal((is_start_ == TRUE ? SEPARATOR_PRINT_ARRAY_START : SEPARATOR_PRINT_ARRAY_END), FALSE);
 
 	if (is_start_ == FALSE) print_new_line();
 }
 
-void print_array_item_internal(size_t i, size_t max_i, void* value_, char* format_, const type type_)
+void print_array_item_internal(const size_t i, const size_t max_i, void* value_, const char* format_, const type type_)
 {
 	print_internal(value_, format_, type_, FALSE);
 
