@@ -3,10 +3,10 @@
 
 #include "all.h"
 
-void print(void*, type);
+void print();
 
 void print_new_line();
 
-void print_internal(void*, const char*, type, boolean);
+void print_internal(void*, char*, type, boolean);
 
 #endif

@@ -9,14 +9,9 @@ void print(void* value_, const type type_)
 
 void print_new_line() { print_internal("\n", get_type_format(STRING), STRING, FALSE); }
 
-void print_internal(void* value_, const char* format_, const type type_, const boolean add_new_line_)
+void print_internal(void* value_, char* format_, const type type_, const boolean add_new_line_)
 {
 	if (type_ == TYPE) printf(format_, type_to_string((type)value_));
-	else if (type_ == ERROR) printf(format_, get_error_message((type_error)type_, WRONG_POINTER));
-	else if (type_ == WARNING) printf(format_, get_warning_message((type_warning)type_, WRONG_POINTER));
-	else if (type_ == LOG) printf(format_, log_to_string((log*)value_));
-	else if (type_ == OUTPUT) printf(format_, output_to_string((output*)value_));
-	else if (type_ == BOOLEAN) printf(format_, boolean_to_string((boolean)value_));
 	else if (type_ == STRING) printf(format_, (char*)value_);
 	else if (type_ == CHAR) printf(format_, *((char*)value_));
 	else if (type_ == INT) printf(format_, *((int*)value_));
@@ -24,6 +19,7 @@ void print_internal(void* value_, const char* format_, const type type_, const b
 	else if (type_ == SHORT) printf(format_, *((short*)value_));
 	else if (type_ == LONG) printf(format_, *((long*)value_));
 	else if (type_ == DOUBLE) printf(format_, *((double*)value_));
+	else if (type_ == BOOLEAN) printf(format_, boolean_to_string((boolean)value_));
 	else return;
 
 	if (add_new_line_) print_new_line();
