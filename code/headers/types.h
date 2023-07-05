@@ -3,8 +3,6 @@
 
 #include "all.h"
 
-boolean type_is_ok(type);
-
 boolean type_is_custom(type);
 
 boolean type_is_enum(type);

@@ -23,41 +23,143 @@ char* __concatenate(const char* input1_, const char* input2_)
 	return ((length1 != WRONG_SIZE && length2 != WRONG_SIZE) ? __concatenate_internal(input1_, length1, input2_, length2) : __get_wrong_string_heap());
 }
 
-char* _get_wrong_string(const boolean is_heap_) { return (is_heap_ ? __get_wrong_string_heap() : get_wrong_string_stack()); }
+char* __initialise_string(const size_t length_) { return __initialise(length_, STRING, FALSE); }
 
-char* get_wrong_string_stack() { return WRONG_STRING; }
+char* __assign_string(char* input_)
+{
+	size_t length = get_string_length_internal(input_, FALSE);
 
-char* __get_wrong_string_heap() { return add_string_termination_internal((char*)__malloc(0, STRING), 0); }
+	return (length > WRONG_SIZE ? __assign(input_, length, STRING, FALSE) : __assign_wrong_string());
+}
 
-char* __initialise_string(const size_t length_) { return (length_ != WRONG_SIZE ? (char*)__malloc(length_, STRING) : __get_wrong_string_heap()); }
+char* __assign_free_in_string(char* input_h_)
+{
+	size_t length = get_string_length_internal(input_h_, FALSE);
 
-char* __assign_string(char* input_) { return __assign_free_string_internal(input_, FALSE); }
-
-char* __assign_free_in_string(char* input_h_) { return __assign_free_string_internal(input_h_, TRUE); }
+	return (length > WRONG_SIZE ? __assign_free_in(input_h_, length, STRING, FALSE) : __assign_free_wrong_string(input_h_));
+}
 
 char* __assign_free_out_string(char* output_h_, char* input_)
 {
-	free(output_h_);
+	size_t length = get_string_length_internal(input_, FALSE);
 
-	output_h_ = __assign_free_string_internal(input_, FALSE);
-
-	return output_h_;
+	return (length > WRONG_SIZE ? __assign_free_out(output_h_, input_, length, STRING, FALSE) : __assign_free_wrong_string(output_h_));
 }
 
 char* __assign_free_both_string(char* output_h_, char* input_h_)
 {
-	free(output_h_);
+	size_t length = get_string_length_internal(input_h_, FALSE);
 
-	output_h_ = __assign_free_string_internal(input_h_, TRUE);
-
-	return output_h_;
+	return (length > WRONG_SIZE ? __assign_free_both(output_h_, input_h_, length, STRING, FALSE) : __assign_free_both_wrong_string(output_h_, input_h_));
 }
+
+char* __assign_wrong_string() { return __assign_wrong(0, STRING, FALSE); }
+
+char* __assign_free_wrong_string(char* input_output_h_) { return __assign_free_wrong(input_output_h_, 0, STRING, FALSE); }
+
+char* __assign_free_both_wrong_string(char* output_h_, char* input_h_) { return __assign_free_both_wrong(output_h_, input_h_, 0, STRING, FALSE); }
 
 void print_string(char* input_) { print((string_is_ok(input_) == TRUE ? input_ : WRONG_STRING), STRING); }
 
 char* get_string_format() { return get_type_format(STRING); }
 
 char* boolean_to_string(const boolean input_) { return (input_ == TRUE ? "true" : "false"); }
+
+char* __char_to_string(char input_)
+{
+	type type = CHAR;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
+
+char* __int_to_string(int input_)
+{
+	type type = INT;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
+
+char* __size_to_string(size_t input_)
+{
+	type type = SIZE;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
+
+char* __short_to_string(short input_)
+{
+	type type = SHORT;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
+
+char* __long_to_string(long input_)
+{
+	type type = LONG;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
+
+char* __double_to_string(double input_)
+{
+	type type = DOUBLE;
+
+	char* format = get_type_format(type);
+
+	size_t size = snprintf(WRONG_POINTER, 0, format, input_) + 1;
+
+	char* output = __initialise_internal(size);
+
+	if (output == WRONG_POINTER) output = __get_wrong_string_heap();
+	else snprintf(output, size, format, input_);
+
+	return output;
+}
 
 char* __normalise_string(const char* input_)
 {
@@ -73,10 +175,13 @@ char* __string_to_lower(const char* input_)
 	return (length > WRONG_SIZE ? __string_to_lower_internal(input_, length) : __get_wrong_string_heap());
 }
 
-output index_of_string(const char* needle_, const char* haystack_, const size_t start_i_)
-{
-	return ((string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE) ? index_of_string_internal(needle_, haystack_, TRUE, start_i_) : get_wrong_output(SIZE, (void*)ERROR_WRONG_INPUTS, TRUE, "index_of_string"));
-}
+output* __index_of_string(const char* needle_, const char* haystack_, const size_t start_i_) { return ((string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE) ? __index_of_string_internal(get_new_output_pointer(0, SIZE), needle_, haystack_, TRUE, start_i_) : get_wrong_output_pointer(SIZE, (void*)ERROR_WRONG_INPUTS, TRUE, "index_of_string")); }
+
+char* _get_wrong_string(const boolean is_heap_) { return _get_wrong(STRING, FALSE, is_heap_); }
+
+void* __get_wrong_string_heap() { return __get_wrong_heap(STRING, FALSE); }
+
+void* get_wrong_string_stack() { return get_wrong_stack(STRING, FALSE); }
 
 size_t get_string_length_internal(const char* input_, const boolean trim_)
 {
@@ -118,25 +223,24 @@ boolean strings_are_equal_internal(const char* input1_, const char* input2_, con
 
 char* __trim_internal(const char* input_, const size_t length_)
 {
-	size_t length = (length_ > WRONG_SIZE ? length_ : get_string_length_internal(input_, FALSE));
+	size_t* start_length = __trim_start_length_internal(input_, (length_ > WRONG_SIZE ? length_ : get_string_length_internal(input_, FALSE)));
 
-	size_t start_length[2];
+	char* output = (start_length[1] > WRONG_SIZE ? __substring(input_, start_length[0], start_length[1]) : __get_wrong_string_heap());
 
-	trim_start_length_internal(start_length, input_, length);
+	free(start_length);
 
-	return (start_length[1] > WRONG_SIZE ? __substring(input_, start_length[0], start_length[1]) : __get_wrong_string_heap());
+	return output;
 }
 
-void trim_start_length_internal(size_t* output_s_2_, const char* input_, const size_t length_)
+size_t* __trim_start_length_internal(const char* input_, const size_t length_)
 {
-	output_s_2_[0] = 0;
-	output_s_2_[1] = 0;
+	size_t* output = __initialise_array(2, SIZE);
 
 	size_t min_i = 0;
 	size_t max_i = length_ - 1;
 
-	output_s_2_[0] = min_i;
-	output_s_2_[1] = length_;
+	output[0] = min_i;
+	output[1] = length_;
 
 	for (size_t i = 0; i < 2; i++)
 	{
@@ -145,17 +249,17 @@ void trim_start_length_internal(size_t* output_s_2_, const char* input_, const s
 		if (i == 0) i2 = min_i;
 		else
 		{
-			if (output_s_2_[0] > max_i)
+			if (output[0] > max_i)
 			{
-				output_s_2_[0] = 0;
-				output_s_2_[1] = 0;
+				output[0] = 0;
+				output[1] = 0;
 
-				return;
+				return output;
 			}
 
 			i2 = max_i;
 
-			output_s_2_[1] -= output_s_2_[0];
+			output[1] -= output[0];
 		}
 
 		while (TRUE)
@@ -164,20 +268,22 @@ void trim_start_length_internal(size_t* output_s_2_, const char* input_, const s
 
 			if (i == 0)
 			{
-				output_s_2_[i]++;
+				output[i]++;
 
 				i2++;
 				if (i2 > max_i) break;
 			}
 			else
 			{
-				output_s_2_[i]--;
+				output[i]--;
 
 				i2--;
 				if (i2 < min_i) break;
 			}
 		}
 	}
+
+	return output;
 }
 
 char* _substring_internal(char* output_, const char* input_, const size_t start_i_, const size_t length_, const boolean is_heap_)
@@ -188,12 +294,12 @@ char* _substring_internal(char* output_, const char* input_, const size_t start_
 	{
 		output_ = (is_heap_ == TRUE ? __assign_free_out_string(output_, __get_wrong_string_heap()) : get_wrong_string_stack());
 	}
-	else output_ = _substring_common_internal(output_, input_, start_i_, length_, length0);
+	else output_ = substring_common_internal(output_, input_, start_i_, length_, length0);
 
 	return output_;
 }
 
-char* _substring_common_internal(char* output_, const char* input_, const size_t start_i_, const size_t length_, const size_t length0_)
+char* substring_common_internal(char* output_, const char* input_, const size_t start_i_, const size_t length_, const size_t length0_)
 {
 	size_t i = 0;
 	size_t i2 = start_i_;
@@ -235,23 +341,19 @@ char* __concatenate_internal(const char* input1_, const size_t length1_, const c
 
 char* add_string_termination_internal(char* output_, const size_t length_)
 {
-	output_[length_] = '\0';
+	output_[length_] = STRING_TERMINATION;
 
 	return output_;
 }
 
-char* __assign_free_string_internal(char* input_, boolean free_input_)
-{
-	char* output = strcpy(__initialise_string(get_string_length_internal(input_, FALSE)), input_);
-
-	if (free_input_) free(input_);
-
-	return output;
-}
-
 void print_string_internal(char* input_, const boolean add_new_line_) { print_internal(input_, get_string_format(), STRING, add_new_line_); }
 
-char* __normalise_string_internal(const char* input_, const size_t length_) { return __string_to_lower_internal(__assign_free_in_string(__trim_internal(input_, length_)), length_); }
+char* __normalise_string_internal(const char* input_, const size_t length_)
+{
+	char* temp = __trim_internal(input_, length_);
+
+	return __assign_free_both_string(temp, __string_to_lower_internal(temp, length_));
+}
 
 char* __string_to_lower_internal(const char* input_, const size_t length_)
 {
@@ -262,27 +364,23 @@ char* __string_to_lower_internal(const char* input_, const size_t length_)
 	return output;
 }
 
-output index_of_string_internal(const char* needle_, const char* haystack_, const boolean normalise_, const size_t start_i_)
+output* __index_of_string_internal(output* output_, const char* needle_, const char* haystack_, const boolean normalise_, const size_t start_i_)
 {
-	output output;
-
 	if (normalise_)
 	{
 		char* needle = __normalise_string(needle_);
 
-		output = index_of_string_common_internal(needle, haystack_, normalise_, start_i_);
+		output_ = __index_of_string_common_internal(output_, needle, haystack_, normalise_, start_i_);
 
 		free(needle);
 	}
-	else output = index_of_string_common_internal(needle_, haystack_, normalise_, start_i_);
+	else output_ = __index_of_string_common_internal(output_, needle_, haystack_, normalise_, start_i_);
 
-	return output;
+	return output_;
 }
 
-output index_of_string_common_internal(const char* needle_, const char* haystack_, const boolean normalise_, const size_t start_i_)
+output* __index_of_string_common_internal(output* output_, const char* needle_, const char* haystack_, const boolean normalise_, const size_t start_i_)
 {
-	output output = get_new_output(0, SIZE);
-
 	size_t length_needle = get_string_length_internal(needle_, FALSE);
 	size_t length_haystack = get_string_length_internal(haystack_, FALSE);
 
@@ -297,18 +395,18 @@ output index_of_string_common_internal(const char* needle_, const char* haystack
 		if (start_i_ > max_i) is_ok = FALSE;
 	}
 
-	if (is_ok == FALSE) return *update_output_log(&output, (void*)ERROR_WRONG_INPUTS, TRUE, "index_of_string_common_internal");
+	if (is_ok == FALSE) return update_output_error_warning(output_, (void*)ERROR_WRONG_INPUTS, TRUE, "index_of_string_common_internal");
 
 	size_t value = 0;
 	is_ok = FALSE;
 
 	for (size_t i = start_i_; i <= max_i; i++)
 	{
-		char* temp = _substring_common_internal(__initialise_string(length_needle), haystack_, i, length_needle, length_haystack);
+		char* temp = substring_common_internal(__initialise_string(length_needle), haystack_, i, length_needle, length_haystack);
 
 		if (normalise_)
 		{
-			temp = __assign_free_out_string(temp, __string_to_lower(temp));
+			temp = __assign_free_both_string(temp, __string_to_lower(temp));
 
 			is_ok = strings_are_equal_internal(temp, needle_, FALSE);
 		}
@@ -324,8 +422,8 @@ output index_of_string_common_internal(const char* needle_, const char* haystack
 		}
 	}
 
-	if (is_ok == TRUE) output._value = (void*)value;
-	else output = *update_output_log(&output, (void*)WARNING_NOT_FOUND, FALSE, "index_of_string_common_internal");
+	if (is_ok == TRUE) output_->_value = (void*)value;
+	else output_ = update_output_error_warning(output_, (void*)WARNING_NOT_FOUND, FALSE, "index_of_string_common_internal");
 
-	return output;
+	return output_;
 }
