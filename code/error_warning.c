@@ -1,15 +1,16 @@
 #include "headers/error_warning.h"
 
-char* error_warning_to_string(const error_warning* error_warning_) { return (error_warning_ != WRONG_POINTER ? error_warning_->_message : WRONG_STRING); }
+error_warning* __get_new_error_warning_error(const type_error error_, void* further_) { return __get_new_error_warning_internal(error_, WRONG_WARNING, TRUE, further_); }
 
-error_warning get_new_error_warning(void* type_error_warning_, const boolean is_error_, void* further_)
+error_warning* __get_new_error_warning_warning(const type_warning warning_, void* further_) { return __get_new_error_warning_internal(WRONG_ERROR, warning_, FALSE, further_); }
+
+error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)
 {
-	error_warning error_warning = { type_error_warning_, is_error_, further_, get_error_warning_message_internal(type_error_warning_, is_error_, further_) };
+	error_warning temp = { error_, warning_, is_error_, further_, get_error_warning_message_internal(error_, warning_, is_error_, further_) };
 
-	return error_warning;
+	error_warning* out = __assign_variable(&temp, ERROR_WARNING);
+
+	return out;
 }
 
-char* get_error_warning_message_internal(void* type_error_warning_, const boolean is_error_, void* further_)
-{
-	return (is_error_ ? get_error_message((type_error)type_error_warning_, further_) : get_warning_message((type_warning)type_error_warning_, further_));
-}
+char* get_error_warning_message_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_) { return (is_error_ ? get_error_message(error_, further_) : get_warning_message(warning_, further_)); }

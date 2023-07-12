@@ -3,10 +3,12 @@
 
 #include "all.h"
 
-char* error_warning_to_string(const error_warning*);
+error_warning* __get_new_error_warning_error(type_error, void*);
 
-error_warning get_new_error_warning(void*, boolean, void*);
+error_warning* __get_new_error_warning_warning(type_warning, void*);
 
-char* get_error_warning_message_internal(void*, boolean, void*);
+error_warning* __get_new_error_warning_internal(type_error, type_warning, boolean, void*);
+
+char* get_error_warning_message_internal(type_error, type_warning, boolean, void*);
 
 #endif

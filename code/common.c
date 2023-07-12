@@ -7,10 +7,10 @@ char* SEPARATOR_PRINT_ARRAY_START = "{ ";
 char* SEPARATOR_PRINT_ARRAY_END = " }";
 char* SEPARATOR_PRINT_ARRAY_ITEMS = ", ";
 
-error_warning* WRONG_ERROR_WARNING = (error_warning*)0;
-output* WRONG_OUTPUT = (output*)0;
+error_warning* WRONG_ERROR_WARNING = 0;
+output* WRONG_OUTPUT = 0;
 char* WRONG_STRING = "";
-void* WRONG_POINTER = (void*)0;
+void* WRONG_POINTER = 0;
 
 type WRONG_TYPE = WRONG_TYPE0;
 type_error WRONG_ERROR = WRONG_ERROR0;

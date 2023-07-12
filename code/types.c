@@ -1,54 +1,44 @@
 #include "headers/types.h"
 
-boolean type_is_custom(const type input_) { return (type_is_enum(input_) || type_is_struct(input_)); }
+boolean type_is_custom(const type in_) { return (type_is_enum(in_) == TRUE || type_is_struct(in_) == TRUE); }
 
-boolean type_is_enum(const type input_) { return (input_ == TYPE || input_ == ERROR || input_ == WARNING || input_ == BOOLEAN); }
+boolean type_is_enum(const type in_) { return (in_ == TYPE || in_ == ERROR || in_ == WARNING || in_ == BOOLEAN); }
 
-boolean type_is_struct(const type input_) { return (input_ == ERROR_WARNING || input_ == OUTPUT); }
+boolean type_is_struct(const type in_) { return (in_ == ERROR_WARNING || in_ == OUTPUT); }
 
-char* get_type_format(const type input_)
+char* get_type_format(const type in_)
 {
-	if (input_ == STRING || type_is_custom(input_)) return "%s";
-	else if (input_ == CHAR) return "%c";
-	else if (input_ == INT) return "%d";
-	else if (input_ == SIZE) return "%zu";
-	else if (input_ == SHORT) return "%hd";
-	else if (input_ == LONG) return "%ld";
-	else if (input_ == DOUBLE) return "%f";
-	else return WRONG_STRING;
+	char* out;
+
+	if (in_ == STRING || type_is_custom(in_) == TRUE) out = "%s";
+	else if (in_ == CHAR) out = "%c";
+	else if (in_ == INT) out = "%d";
+	else if (in_ == SIZE) out = "%zu";
+	else if (in_ == SHORT) out = "%hd";
+	else if (in_ == LONG) out = "%ld";
+	else if (in_ == DOUBLE) out = "%f";
+	else out = WRONG_STRING;
+
+	return out;
 }
 
-size_t get_type_size(const type input_)
+size_t get_type_size(const type in_)
 {
-	if (input_ == TYPE) return sizeof(type);
-	else if (input_ == ERROR) return sizeof(type_error);
-	else if (input_ == WARNING) return sizeof(type_warning);
-	else if (input_ == ERROR_WARNING) return sizeof(error_warning);
-	else if (input_ == OUTPUT) return sizeof(output);
-	else if (input_ == BOOLEAN) return sizeof(boolean);
-	else if (input_ == STRING || input_ == CHAR) return sizeof(char);
-	else if (input_ == INT) return sizeof(int);
-	else if (input_ == SIZE) return sizeof(size_t);
-	else if (input_ == SHORT) return sizeof(short);
-	else if (input_ == LONG) return sizeof(long);
-	else if (input_ == DOUBLE) return sizeof(double);
-	else return sizeof(void*);
-}
+	size_t out;
 
-char* type_to_string(const type input_)
-{
-	if (input_ == TYPE) return "type";
-	else if (input_ == ERROR) return "error";
-	else if (input_ == WARNING) return "warning";
-	else if (input_ == ERROR_WARNING) return "error_warning";
-	else if (input_ == OUTPUT) return "output";
-	else if (input_ == BOOLEAN) return "boolean";
-	else if (input_ == STRING) return "string";
-	else if (input_ == CHAR) return "char";
-	else if (input_ == INT) return "int";
-	else if (input_ == SIZE) return "size";
-	else if (input_ == SHORT) return "short";
-	else if (input_ == LONG) return "long";
-	else if (input_ == DOUBLE) return "double";
-	else return WRONG_STRING;
+	if (in_ == TYPE) out = sizeof(type);
+	else if (in_ == ERROR) out = sizeof(type_error);
+	else if (in_ == WARNING) out = sizeof(type_warning);
+	else if (in_ == ERROR_WARNING) out = sizeof(error_warning);
+	else if (in_ == OUTPUT) out = sizeof(output);
+	else if (in_ == BOOLEAN) out = sizeof(boolean);
+	else if (in_ == STRING || in_ == CHAR) out = sizeof(char);
+	else if (in_ == INT) out = sizeof(int);
+	else if (in_ == SIZE) out = sizeof(size_t);
+	else if (in_ == SHORT) out = sizeof(short);
+	else if (in_ == LONG) out = sizeof(long);
+	else if (in_ == DOUBLE) out = sizeof(double);
+	else out = sizeof(void*);
+
+	return out;
 }

@@ -14,7 +14,8 @@ typedef enum { FALSE, TRUE } boolean;
 
 typedef struct error_warning
 {
-	void* _type_error_warning;
+	type_error _error;
+	type_warning _warning;
 	boolean _is_error;
 	void* _further;
 	char* _message;
@@ -26,7 +27,7 @@ typedef struct output
 	void* _value;
 	type _type;
 	boolean _is_ok;
-	error_warning _error_warning;
+	error_warning* _error_warning;
 }
 output;
 
