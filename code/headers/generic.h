@@ -3,6 +3,8 @@
 
 #include "all.h"
 
+void* get_wrong_generic(type);
+
 void* _get_wrong_generic(type, boolean);
 
 void* get_wrong_generic_stack(type);
@@ -67,7 +69,33 @@ long* generic_to_long_array(void*);
 
 double* generic_to_double_array(void*);
 
-void* get_generic_array_value(void*, size_t, type);
+type get_generic_array_type(void*, size_t);
+
+type_error get_generic_array_error(void*, size_t);
+
+type_warning get_generic_array_warning(void*, size_t);
+
+error_warning* get_generic_array_error_warning(void*, size_t);
+
+output* get_generic_array_output(void*, size_t);
+
+boolean get_generic_array_boolean(void*, size_t);
+
+char* get_generic_array_string(void*, size_t);
+
+char get_generic_array_char(void*, size_t);
+
+int get_generic_array_int(void*, size_t);
+
+size_t get_generic_array_size(void*, size_t);
+
+short get_generic_array_short(void*, size_t);
+
+long get_generic_array_long(void*, size_t);
+
+double get_generic_array_double(void*, size_t);
+
+void* get_generic_array_generic(void*, size_t, type);
 
 void* __type_to_generic(type);
 

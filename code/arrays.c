@@ -1,6 +1,6 @@
 #include "headers/arrays.h"
 
-void* assign_array(void* out_, void* in_, const size_t size_, const type type_) { return ((out_ != WRONG_POINTER && array_is_ok(in_, size_, type_) == TRUE) ? assign(out_, in_, type_, size_) : get_wrong_array_stack(type_)); }
+void* assign_array(void* out_, void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) == TRUE ? assign(out_, in_, type_, size_) : get_wrong_array_stack(type_)); }
 
 void* __initialise_array(const size_t size_, const type type_) { return __initialise(size_, type_, TRUE); }
 
@@ -17,6 +17,16 @@ void* __assign_wrong_array(const size_t size_, const type type_) { return __assi
 void* __assign_free_wrong_array(void* in_out_h_, const size_t size_, const type type_) { return __assign_free_wrong(in_out_h_, size_, type_, TRUE); }
 
 void* __assign_free_both_wrong_array(void* out_h_, void* in_h_, const size_t size_, const type type_) { return __assign_free_both_wrong(out_h_, in_h_, size_, type_, TRUE); }
+
+void free_2d_array(void* in_h_, const size_t size_, const type type_)
+{
+	if (array_is_ok(in_h_, size_, type_) == TRUE)
+	{
+		for (size_t i = 0; i < size_; i++) { free_array_internal(in_h_, i, type_); }
+	}
+
+	free(in_h_);
+}
 
 void* _get_wrong_array(const type type_, const boolean is_heap_) { return _get_wrong(type_, TRUE, is_heap_); }
 
@@ -36,23 +46,25 @@ void print_array(void* in_, const size_t size_, const type type_)
 
 	const size_t max_i = size_ - 1;
 
-	for (size_t i = 0; i <= max_i; i++) { print_array_item_internal(i, max_i, get_generic_array_value(in_, i, type_), get_type_format(type_), type_); }
+	for (size_t i = 0; i <= max_i; i++) { print_array_item_internal(i, max_i, get_generic_array_generic(in_, i, type_), get_type_format(type_), type_); }
 
 	print_array_start_end_internal(FALSE);
 }
 
 boolean array_is_ok_internal(const void* in_) { return (in_ != WRONG_POINTER); }
 
+void free_array_internal(void* in_h_, const size_t i_, const type type_) { free_(get_generic_array_generic(in_h_, i_, type_), type_); }
+
 void print_array_start_end_internal(const boolean is_start_)
 {
-	print_string_internal((is_start_ == TRUE ? SEPARATOR_PRINT_ARRAY_START : SEPARATOR_PRINT_ARRAY_END), FALSE);
+	print_string_internal((is_start_ == TRUE ? DEFAULT_SEPARATOR_START : DEFAULT_SEPARATOR_END), FALSE);
 
 	if (is_start_ == FALSE) print_new_line();
 }
 
-void print_array_item_internal(const size_t i, const size_t max_i, void* value_, const char* format_, const type type_)
+void print_array_item_internal(const size_t i, const size_t max_i, void* variable_, const char* format_, const type type_)
 {
-	print_internal(value_, format_, type_, FALSE);
+	print_internal(variable_, format_, type_, FALSE);
 
-	if (i < max_i) print_string_internal(SEPARATOR_PRINT_ARRAY_ITEMS, FALSE);
+	if (i < max_i) print_string_internal(DEFAULT_SEPARATOR_ITEMS, FALSE);
 }

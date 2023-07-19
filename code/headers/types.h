@@ -3,11 +3,15 @@
 
 #include "all.h"
 
+boolean type_is_native(type);
+
 boolean type_is_custom(type);
 
 boolean type_is_enum(type);
 
 boolean type_is_struct(type);
+
+boolean type_is_pointer(type);
 
 char* get_type_format(type);
 

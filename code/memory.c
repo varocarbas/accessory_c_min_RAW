@@ -10,14 +10,19 @@ void free_(void* in_h_, const type type_)
 
 void free_output(output* in_h_)
 {
-	free_output_error_warning(in_h_);
+	if (in_h_ != WRONG_OUTPUT)
+	{
+		free(in_h_->_value);
+
+		free_output_error_warning(in_h_);
+	}
 
 	free(in_h_);
 }
 
 void free_output_error_warning(output* in_h_)
 {
-	if (in_h_ != WRONG_OUTPUT && in_h_->_is_ok == FALSE) free(in_h_->_error_warning);
+	if (in_h_ != WRONG_OUTPUT && in_h_->_error_warning != WRONG_ERROR_WARNING) free(in_h_->_error_warning);
 }
 
 void* __initialise(const size_t tot_elements_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_elements_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_elements_, type_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
@@ -91,7 +96,7 @@ void* __get_wrong_heap(const type type_, const boolean is_array_)
 	}
 	else
 	{
-		size_t size = 1;
+		size = 1;
 
 		out = _assign_internal(__initialise(size, type_, is_array_), get_wrong(type_, is_array_), type_, is_array_, size, TRUE);
 	}
@@ -135,7 +140,7 @@ void* __assign_free_internal(void* in_, const size_t tot_elements_, const type t
 
 void* _assign_internal(void* out_, void* in_, const type type_, const boolean is_array_, const size_t size_, const boolean is_heap_)
 {
-	if (out_ == WRONG_POINTER) out_ = (is_heap_ ? __get_wrong_heap(type_, is_array_) : get_wrong_stack(type_, is_array_));
+	if (out_ == WRONG_POINTER && is_heap_ == TRUE) out_ = __get_wrong_heap(type_, is_array_);
 	else
 	{
 		if (type_ == STRING) out_ = strcpy(out_, in_);

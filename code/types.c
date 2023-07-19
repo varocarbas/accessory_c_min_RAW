@@ -1,10 +1,14 @@
 #include "headers/types.h"
 
+boolean type_is_native(const type in_) { return (type_is_custom(in_) == FALSE); }
+
 boolean type_is_custom(const type in_) { return (type_is_enum(in_) == TRUE || type_is_struct(in_) == TRUE); }
 
 boolean type_is_enum(const type in_) { return (in_ == TYPE || in_ == ERROR || in_ == WARNING || in_ == BOOLEAN); }
 
 boolean type_is_struct(const type in_) { return (in_ == ERROR_WARNING || in_ == OUTPUT); }
+
+boolean type_is_pointer(const type in_) { return (in_ == STRING || type_is_struct(in_) == TRUE); }
 
 char* get_type_format(const type in_)
 {

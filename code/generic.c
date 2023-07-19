@@ -1,5 +1,7 @@
 #include "headers/generic.h"
 
+void* get_wrong_generic(const type type_) { return get_wrong_generic_stack(type_); }
+
 void* _get_wrong_generic(const type type_, const boolean is_heap_) { return _get_wrong(type_, FALSE, is_heap_); }
 
 void* get_wrong_generic_stack(const type type_) { return get_wrong_stack(type_, FALSE); }
@@ -64,26 +66,51 @@ long* generic_to_long_array(void* in_) { return (in_ != WRONG_POINTER ? in_ : WR
 
 double* generic_to_double_array(void* in_) { return (in_ != WRONG_POINTER ? in_ : WRONG_POINTER); }
 
-void* get_generic_array_value(void* in_, const size_t i_, const type type_)
+type get_generic_array_type(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_type(get_generic_array_generic(in_, i_, TYPE)): WRONG_TYPE); }
+
+type_error get_generic_array_error(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_error(get_generic_array_generic(in_, i_, ERROR)): WRONG_ERROR); }
+
+type_warning get_generic_array_warning(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_warning(get_generic_array_generic(in_, i_, WARNING)): WRONG_WARNING); }
+
+error_warning* get_generic_array_error_warning(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_error_warning(get_generic_array_generic(in_, i_, ERROR_WARNING)): WRONG_ERROR_WARNING); }
+
+output* get_generic_array_output(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_output(get_generic_array_generic(in_, i_, OUTPUT)): WRONG_OUTPUT); }
+
+boolean get_generic_array_boolean(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_boolean(get_generic_array_generic(in_, i_, BOOLEAN)): WRONG_BOOLEAN); }
+
+char* get_generic_array_string(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_string(get_generic_array_generic(in_, i_, STRING)): WRONG_STRING); }
+
+char get_generic_array_char(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_char(get_generic_array_generic(in_, i_, CHAR)): WRONG_CHAR); }
+
+int get_generic_array_int(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_int(get_generic_array_generic(in_, i_, INT)): WRONG_INT); }
+
+size_t get_generic_array_size(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_size(get_generic_array_generic(in_, i_, SIZE)): WRONG_SIZE); }
+
+short get_generic_array_short(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_short(get_generic_array_generic(in_, i_, SHORT)): WRONG_SHORT); }
+
+long get_generic_array_long(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_long(get_generic_array_generic(in_, i_, LONG)): WRONG_LONG); }
+
+double get_generic_array_double(void* in_, const size_t i_) { return (in_ != WRONG_POINTER ? generic_to_double(get_generic_array_generic(in_, i_, DOUBLE)): WRONG_DOUBLE); }
+
+void* get_generic_array_generic(void* in_, const size_t i_, const type type_)
 {
-	if (in_ == WRONG_POINTER) return get_wrong_generic_stack(type_);
+	if (in_ == WRONG_POINTER || type_ == WRONG_TYPE) return get_wrong_generic(type_);
 
 	void* out;
 
-	if (type_ == TYPE) out = &((type*)in_)[i_];
-	else if (type_ == ERROR) out = &((type_error*)in_)[i_];
-	else if (type_ == WARNING) out = &((type_warning*)in_)[i_];
-	else if (type_ == ERROR_WARNING) out = ((error_warning**)in_)[i_];
-	else if (type_ == OUTPUT) out = ((output**)in_)[i_];
-	else if (type_ == BOOLEAN) out = &((boolean*)in_)[i_];
-	else if (type_ == STRING) out = ((char**)in_)[i_];
-	else if (type_ == CHAR) out = &((char*)in_)[i_];
-	else if (type_ == INT) out = &((int*)in_)[i_];
-	else if (type_ == SIZE) out = &((size_t*)in_)[i_];
-	else if (type_ == SHORT) out = &((short*)in_)[i_];
-	else if (type_ == LONG) out = &((long*)in_)[i_];
-	else if (type_ == DOUBLE) out = &((double*)in_)[i_];
-	else out = WRONG_POINTER;
+	if (type_ == TYPE) out = &generic_to_type_array(in_)[i_];
+	else if (type_ == ERROR) out = &generic_to_error_array(in_)[i_];
+	else if (type_ == WARNING) out = &generic_to_warning_array(in_)[i_];
+	else if (type_ == ERROR_WARNING) out = generic_to_error_warning_array(in_)[i_];
+	else if (type_ == OUTPUT) out = generic_to_output_array(in_)[i_];
+	else if (type_ == BOOLEAN) out = &generic_to_boolean_array(in_)[i_];
+	else if (type_ == STRING) out = generic_to_string_array(in_)[i_];
+	else if (type_ == CHAR) out = &generic_to_char_array(in_)[i_];
+	else if (type_ == INT) out = &generic_to_int_array(in_)[i_];
+	else if (type_ == SIZE) out = &generic_to_size_array(in_)[i_];
+	else if (type_ == SHORT) out = &generic_to_short_array(in_)[i_];
+	else if (type_ == LONG) out = &generic_to_long_array(in_)[i_];
+	else if (type_ == DOUBLE) out = &generic_to_double_array(in_)[i_];
 
 	return out;
 }

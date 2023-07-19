@@ -1,8 +1,10 @@
 #include "headers/strings.h"
 
-char* assign_string(char* out_, char* in_) { return ((out_ != WRONG_POINTER && string_is_ok(in_) == TRUE) ? assign(out_, in_, STRING, WRONG_SIZE) : get_wrong_string_stack()); }
+char* assign_string(char* out_, char* in_) { return (string_is_ok(in_) == TRUE ? assign(out_, in_, STRING, WRONG_SIZE) : get_wrong_string_stack()); }
 
 char* __initialise_string(const size_t length_) { return __initialise(length_, STRING, FALSE); }
+
+char** __initialise_string_array(const size_t size_) { return __initialise(size_ - 1, STRING, FALSE); }
 
 char* __assign_string(char* in_)
 {
@@ -38,11 +40,13 @@ char* __assign_free_wrong_string(char* in_out_h_) { return __assign_free_wrong(i
 
 char* __assign_free_both_wrong_string(char* out_h_, char* in_h_) { return __assign_free_both_wrong(out_h_, in_h_, 0, STRING, FALSE); }
 
+void free_string_array(char** in_h_, const size_t size_) { free_2d_array(in_h_, size_, STRING); }
+
 char* _get_wrong_string(const boolean is_heap_) { return _get_wrong(STRING, FALSE, is_heap_); }
 
-void* get_wrong_string_stack() { return get_wrong_stack(STRING, FALSE); }
+char* get_wrong_string_stack() { return get_wrong_stack(STRING, FALSE); }
 
-void* __get_wrong_string_heap() { return __get_wrong_heap(STRING, FALSE); }
+char* __get_wrong_string_heap() { return __get_wrong_heap(STRING, FALSE); }
 
 size_t get_string_length(const char* in_) { return get_string_length_internal(in_, TRUE); }
 
@@ -50,59 +54,100 @@ boolean string_is_ok(const char* in_) { return string_is_ok_internal(in_, TRUE);
 
 boolean strings_are_equal(const char* input1_, const char* input2_) { return strings_are_equal_internal(input1_, input2_, TRUE); }
 
-char* __trim(const char* in_)
+char* __trim_string(const char* in_)
 {
 	size_t length = get_string_length_internal(in_, FALSE);
 
-	return (length > WRONG_SIZE ? __trim_internal(in_, length) : __get_wrong_string_heap());
+	return (length > WRONG_SIZE ? __trim_string_internal(in_, length) : __get_wrong_string_heap());
 }
 
 char* __substring(const char* in_, const size_t start_i_, const size_t length_) { return _substring_internal(__initialise_string(length_), in_, start_i_, length_, TRUE); }
 
-char* __concatenate(const char* input1_, const char* input2_)
-{
-	size_t length1 = get_string_length_internal(input1_, FALSE);
-	size_t length2 = get_string_length_internal(input2_, FALSE);
+char* __concatenate_strings(char** ins_, const size_t tot_) { return __concatenate_strings_internal(ins_, tot_, WRONG_STRING); }
 
-	return ((length1 != WRONG_SIZE && length2 != WRONG_SIZE) ? __concatenate_internal(input1_, length1, input2_, length2) : __get_wrong_string_heap());
+char* __concatenate_two_strings(char* in1_, char* in2_)
+{
+	size_t length1 = get_string_length_internal(in1_, FALSE);
+	size_t length2 = get_string_length_internal(in2_, FALSE);
+
+	boolean length1_ok = (length1 > WRONG_SIZE);
+	boolean length2_ok = (length2 > WRONG_SIZE);
+
+	char* out;
+
+	if (length1_ok == TRUE && length2_ok == TRUE) out = __concatenate_two_strings_internal(in1_, length1, in2_, length2);
+	else if (length1_ok == length2_ok) out = __get_wrong_string_heap();
+	else out = __assign_string((length1_ok == TRUE ? in1_ : in2_));
+
+	return out;
 }
 
 void print_string(char* in_) { print((string_is_ok(in_) == TRUE ? in_ : WRONG_STRING), STRING); }
 
 char* get_string_format() { return get_type_format(STRING); }
 
-char* _value_to_string(void* value_, const type type_) { return (type_is_custom(type_) == TRUE ? custom_value_to_string(value_, type_) : __native_value_to_string(value_, type_)); }
-
-char* custom_value_to_string(void* value_, const type type_)
+char* generic_variable_to_string(void* in_, const type type_)
 {
-	char* out;
+	void* out;
 
-	if (type_ == TYPE) out = type_to_string(generic_to_type(value_));
-	else if (type_ == ERROR) out = get_error_message(generic_to_error(value_), WRONG_POINTER);
-	else if (type_ == WARNING) out = get_warning_message(generic_to_warning(value_), WRONG_POINTER);
-	else if (type_ == ERROR_WARNING) out = error_warning_to_string(generic_to_error_warning(value_));
-	else if (type_ == OUTPUT) out = output_to_string(generic_to_output(value_));
-	else if (type_ == BOOLEAN) out = boolean_to_string(generic_to_boolean(value_));
-	else out = WRONG_STRING;
+	if (variable_is_ok(in_, type_) == FALSE) out = get_wrong_string_stack();
+	else if (type_ == STRING) out = __assign_string(generic_to_string(in_));
+	else if (type_ == TYPE) out = type_pointer_to_generic(in_);
+	else if (type_ == ERROR) out = error_pointer_to_generic(in_);
+	else if (type_ == WARNING) out = warning_pointer_to_generic(in_);
+	else if (type_ == ERROR_WARNING) out = error_warning_pointer_to_generic(in_);
+	else if (type_ == OUTPUT) out = output_pointer_to_generic(in_);
+	else if (type_ == BOOLEAN) out = boolean_pointer_to_generic(in_);
+	else if (type_ == STRING) out = string_pointer_to_generic(in_);
+	else if (type_ == CHAR) out = char_pointer_to_generic(in_);
+	else if (type_ == INT) out = int_pointer_to_generic(in_);
+	else if (type_ == SIZE) out = size_pointer_to_generic(in_);
+	else if (type_ == SHORT) out = short_pointer_to_generic(in_);
+	else if (type_ == LONG) out = long_pointer_to_generic(in_);
+	else if (type_ == DOUBLE) out = double_pointer_to_generic(in_);
+	else out = WRONG_POINTER;
 
 	return out;
 }
 
-char* __native_value_to_string(void* value_, const type type_)
+char* _variable_to_string(void* in_, const type type_) { return (type_is_custom(type_) == TRUE ? _custom_variable_to_string(in_, type_) : __native_variable_to_string(in_, type_)); }
+
+char* _custom_variable_to_string(void* in_, const type type_)
 {
 	char* out;
 
-	if (type_ == STRING) out = __assign_string(generic_to_string(value_));
-	else if (type_ == CHAR) out = __char_to_string(generic_to_char(value_));
-	else if (type_ == INT) out = __int_to_string(generic_to_int(value_));
-	else if (type_ == SIZE) out = __size_to_string(generic_to_size(value_));
-	else if (type_ == SHORT) out = __short_to_string(generic_to_short(value_));
-	else if (type_ == LONG) out = __long_to_string(generic_to_long(value_));
-	else if (type_ == DOUBLE) out = __double_to_string(generic_to_double(value_));
-	else out = __get_wrong_string_heap();
+	if (variable_is_ok(in_, type_) == FALSE) out = _get_wrong_string(custom_variable_to_string_is_heap(type_));
+	else if (type_ == TYPE) out = type_to_string(generic_to_type(in_));
+	else if (type_ == ERROR) out = error_to_string(generic_to_error(in_));
+	else if (type_ == WARNING) out = warning_to_string(generic_to_warning(in_));
+	else if (type_ == ERROR_WARNING) out = __error_warning_to_string(generic_to_error_warning(in_));
+	else if (type_ == OUTPUT) out = __output_to_string(generic_to_output(in_));
+	else if (type_ == BOOLEAN) out = boolean_to_string(generic_to_boolean(in_));
 
 	return out;
 }
+
+char* __native_variable_to_string(void* in_, const type type_)
+{
+	char* out;
+
+	if (variable_is_ok(in_, type_) == FALSE) out = __get_wrong_string_heap();
+	else if (type_ == STRING) out = __assign_string(generic_to_string(in_));
+	else if (type_ == CHAR) out = __char_to_string(generic_to_char(in_));
+	else if (type_ == INT) out = __int_to_string(generic_to_int(in_));
+	else if (type_ == SIZE) out = __size_to_string(generic_to_size(in_));
+	else if (type_ == SHORT) out = __short_to_string(generic_to_short(in_));
+	else if (type_ == LONG) out = __long_to_string(generic_to_long(in_));
+	else if (type_ == DOUBLE) out = __double_to_string(generic_to_double(in_));
+
+	return out;
+}
+
+boolean variable_to_string_is_heap(const type type_) { return (type_is_custom(type_) == TRUE ? custom_variable_to_string_is_heap(type_) : native_variable_to_string_is_heap(type_)); }
+
+boolean custom_variable_to_string_is_heap(const type type_) { return type_is_pointer(type_); }
+
+boolean native_variable_to_string_is_heap(const type type_) { return TRUE; }
 
 char* type_to_string(const type in_)
 {
@@ -126,20 +171,114 @@ char* type_to_string(const type in_)
 	return out;
 }
 
-char* error_warning_to_string(const error_warning* in_)
+char* error_to_string(const type_error type_)
 {
-	if (in_ == WRONG_ERROR_WARNING) return WRONG_STRING;
+	char* out;
 
-	char* out = WRONG_STRING;
+	if (type_ == ERROR_WRONG_INPUTS) out = "wrong_inputs";
+	else out = WRONG_STRING;
 
 	return out;
 }
 
-char* output_to_string(const output* in_)
+char* __error_to_string_full(const type_error type_)
 {
-	if (in_ == WRONG_OUTPUT) return WRONG_STRING;
+	char* key = __string_to_upper(KEY_ERROR);
 
-	char* out = WRONG_STRING;
+	char* items[] = { key , DEFAULT_SEPARATOR, error_to_string(type_) };
+
+	char* out = __concatenate_strings(items, 3);
+
+	free_(key, STRING);
+
+	return out;
+}
+
+char* warning_to_string(const type_warning type_)
+{
+	char* out;
+
+	if (type_ == WARNING_NOT_FOUND) out = "not_found";
+	else out = WRONG_STRING;
+
+	return out;
+}
+
+char* __warning_to_string_full(const type_warning type_)
+{
+	char* key = __string_to_upper(KEY_WARNING);
+
+	char* items[] = { key , DEFAULT_SEPARATOR, warning_to_string(type_) };
+
+	char* out = __concatenate_strings(items, 3);
+
+	free_(key, STRING);
+
+	return out;
+}
+
+char* __error_warning_to_string(const error_warning* in_)
+{
+	if (variable_is_ok(in_, ERROR_WARNING) == FALSE) return __get_wrong_string_heap();
+
+	char* temp = (in_->_is_error == TRUE ? __error_to_string_full(in_->_error) : __warning_to_string_full(in_->_warning));
+
+	char* out = __concatenate_two_strings(temp, in_->_message);
+
+	free_(temp, STRING);
+
+	return out;
+}
+
+char* __output_to_string(const output* in_)
+{
+	char* out;
+
+	if (variable_is_ok(in_, OUTPUT) == TRUE)
+	{
+		if (variable_is_ok(in_->_error_warning, ERROR_WARNING) == FALSE)
+		{
+			char* temp = __output_value_to_string_full(in_);
+
+			char* items[] = { DEFAULT_SEPARATOR_START, temp, DEFAULT_SEPARATOR_END };
+
+			out = __concatenate_strings(items, 3);
+
+			free_(temp, STRING);
+		}
+		else out = __error_warning_to_string(in_->_error_warning);
+	}
+	else out = __get_wrong_string_heap();
+
+	return out;
+}
+
+char* _output_value_to_string(const output* in_)
+{
+	char* out;
+
+	if (variable_is_ok(in_, OUTPUT) == TRUE) out = _get_wrong_string(variable_to_string_is_heap(in_->_type));
+	else out = _get_wrong_string((in_ == WRONG_OUTPUT || variable_to_string_is_heap(in_->_type) == TRUE));
+
+	return out;
+}
+
+char* __output_value_to_string_full(const output* in_)
+{
+	char* out;
+
+	char* value = _output_value_to_string(in_);
+
+	if (string_is_ok(value) == TRUE)
+	{
+		char* items[] = { value, " (", type_to_string(in_->_type), ")" };
+
+		out = __concatenate_strings(items, 4);
+
+	}
+	else out = __get_wrong_string_heap();
+
+	if (variable_to_string_is_heap(in_->_type) == TRUE) free_(value, STRING);
 
 	return out;
 }
@@ -253,7 +392,14 @@ char* __string_to_lower(const char* in_)
 {
 	size_t length = get_string_length_internal(in_, FALSE);
 
-	return (length > WRONG_SIZE ? __string_to_lower_internal(in_, length) : __get_wrong_string_heap());
+	return (length > WRONG_SIZE ? __string_to_lower_upper_internal(in_, length, TRUE) : __get_wrong_string_heap());
+}
+
+char* __string_to_upper(const char* in_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+
+	return (length > WRONG_SIZE ? __string_to_lower_upper_internal(in_, length, FALSE) : __get_wrong_string_heap());
 }
 
 output* __index_of_string(const char* needle_, const char* haystack_, const size_t start_i_) { return ((string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE) ? __index_of_string_internal(__get_new_output_type(SIZE), needle_, haystack_, TRUE, start_i_) : __get_wrong_output_error(SIZE, ERROR_WRONG_INPUTS, "index_of_string")); }
@@ -264,7 +410,7 @@ size_t get_string_length_internal(const char* in_, const boolean trim_)
 
 	if (trim_ == TRUE)
 	{
-		char* in = __trim_internal(in_, WRONG_SIZE);
+		char* in = __trim_string_internal(in_, WRONG_SIZE);
 
 		out = strlen(in);
 
@@ -296,9 +442,9 @@ boolean strings_are_equal_internal(const char* in1_, const char* in2_, const boo
 	return (out == 0 ? TRUE : FALSE);
 }
 
-char* __trim_internal(const char* in_, const size_t length_)
+char* __trim_string_internal(const char* in_, const size_t length_)
 {
-	size_t* start_length = __trim_start_length_internal(in_, (length_ > WRONG_SIZE ? length_ : get_string_length_internal(in_, FALSE)));
+	size_t* start_length = __trim_string_start_length_internal(in_, (length_ > WRONG_SIZE ? length_ : get_string_length_internal(in_, FALSE)));
 
 	char* out = (start_length[1] > WRONG_SIZE ? __substring(in_, start_length[0], start_length[1]) : __get_wrong_string_heap());
 
@@ -307,7 +453,7 @@ char* __trim_internal(const char* in_, const size_t length_)
 	return out;
 }
 
-size_t* __trim_start_length_internal(const char* in_, const size_t length_)
+size_t* __trim_string_start_length_internal(const char* in_, const size_t length_)
 {
 	size_t* out = __initialise_array(2, SIZE);
 
@@ -390,7 +536,7 @@ char* substring_common_internal(char* out_, const char* in_, const size_t start_
 	return add_string_termination_internal(out_, length_);
 }
 
-char* __concatenate_internal(const char* in1_, const size_t length1_, const char* in2_, const size_t length2_)
+char* __concatenate_two_strings_internal(const char* in1_, const size_t length1_, const char* in2_, const size_t length2_)
 {
 	size_t length0 = length1_ + length2_;
 
@@ -414,6 +560,33 @@ char* __concatenate_internal(const char* in1_, const size_t length1_, const char
 	return out;
 }
 
+char* __concatenate_strings_internal(char** ins_, const size_t tot_, const char* separator_)
+{
+	if (array_is_ok(ins_, tot_, STRING) == FALSE || tot_ == WRONG_SIZE) return __get_wrong_string_heap();
+
+	size_t i = 0;
+
+	char* out = __concatenate_strings_internal_add(WRONG_POINTER, ins_, separator_, i);
+	if (tot_ < 2) return out;
+
+	for (i = 1; i < tot_; i++) { out = __concatenate_strings_internal_add(out, ins_, separator_, i); }
+
+	return out;
+}
+
+char* __concatenate_strings_internal_add(char* out_, char** ins_, const char* separator_, const size_t i_)
+{
+	if (i_ == 0) out_ = __assign_string(ins_[i_]);
+	else
+	{
+		if (string_is_ok(separator_) == TRUE) out_ = __assign_free_both_string(out_, __concatenate_two_strings(out_, DEFAULT_SEPARATOR));
+
+		out_ = __assign_free_both_string(out_, __concatenate_two_strings(out_, ins_[i_]));
+	}
+
+	return out_;
+}
+
 char* add_string_termination_internal(char* out_, const size_t length_)
 {
 	out_[length_] = STRING_TERMINATION;
@@ -425,20 +598,20 @@ void print_string_internal(char* in_, const boolean add_new_line_) { print_inter
 
 char* __normalise_string_internal(const char* in_, const size_t length_)
 {
-	char* temp = __trim_internal(in_, length_);
+	char* temp = __trim_string_internal(in_, length_);
 
-	char* out = __string_to_lower_internal(temp, length_);
+	char* out = __string_to_lower_upper_internal(temp, length_, TRUE);
 
 	free_(temp, STRING);
 
 	return out;
 }
 
-char* __string_to_lower_internal(const char* in_, const size_t length_)
+char* __string_to_lower_upper_internal(const char* in_, const size_t length_, const boolean is_lower_)
 {
 	char* out = __initialise_string(length_);
 
-	for (size_t i = 0; i < length_; i++) { out[i] = tolower(in_[i]); }
+	for (size_t i = 0; i < length_; i++) { out[i] = (is_lower_ == TRUE ? tolower(in_[i]) : toupper(in_[i])); }
 
 	return out;
 }
@@ -501,7 +674,8 @@ output* __index_of_string_common_internal(output* out_, const char* needle_, con
 		}
 	}
 
-	if (is_ok == TRUE) out_->_value = (void*)value;
+
+	if (is_ok == TRUE) out_ = __update_output_value(out_, size_pointer_to_generic(&value), SIZE);
 	else out_ = update_output_error_warning_warning(out_, WARNING_NOT_FOUND, "index_of_string_common_internal");
 
 	return out_;

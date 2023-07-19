@@ -6,7 +6,7 @@ error_warning* __get_new_error_warning_warning(const type_warning warning_, void
 
 error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)
 {
-	error_warning temp = { error_, warning_, is_error_, further_, get_error_warning_message_internal(error_, warning_, is_error_, further_) };
+	error_warning temp = { error_, warning_, is_error_, get_error_warning_message_internal(error_, warning_, is_error_, further_) };
 
 	error_warning* out = __assign_variable(&temp, ERROR_WARNING);
 

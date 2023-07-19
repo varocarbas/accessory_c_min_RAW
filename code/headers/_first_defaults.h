@@ -1,0 +1,11 @@
+#ifndef FIRST_DEFAULTS_H_
+#define FIRST_DEFAULTS_H_
+
+#include "_first_all.h"
+
+char* DEFAULT_SEPARATOR;
+char* DEFAULT_SEPARATOR_START;
+char* DEFAULT_SEPARATOR_END;
+char* DEFAULT_SEPARATOR_ITEMS;
+
+#endif

@@ -11,7 +11,7 @@ void print_new_line() { print_internal("\n", get_type_format(STRING), STRING, FA
 
 void print_internal(void* value_, const char* format_, const type type_, const boolean add_new_line_)
 {
-	if (type_is_custom(type_) == TRUE) printf(format_, custom_value_to_string(value_, type_));
+	if (type_is_custom(type_) == TRUE) printf(format_, _custom_variable_to_string(value_, type_));
 	else if (type_ == STRING) printf(format_, generic_to_string(value_));
 	else if (type_ == CHAR) printf(format_, generic_to_char(value_));
 	else if (type_ == INT) printf(format_, generic_to_int(value_));

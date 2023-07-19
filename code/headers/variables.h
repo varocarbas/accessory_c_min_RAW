@@ -21,6 +21,8 @@ void* __assign_free_wrong_variable(void*, type);
 
 void* __assign_free_both_wrong_variable(void*, void*, type);
 
+void* get_wrong_variable(type);
+
 void* _get_wrong_variable(type, boolean);
 
 void* get_wrong_variable_stack(type);
@@ -28,5 +30,7 @@ void* get_wrong_variable_stack(type);
 void* __get_wrong_variable_heap(type);
 
 boolean variable_is_ok(const void*, type);
+
+char* __concatenate_two_variables(void*, type, void*, type);
 
 #endif

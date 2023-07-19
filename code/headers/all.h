@@ -1,7 +1,8 @@
 #ifndef ALL_H_
 #define ALL_H_
 
-#include "common.h"
+#include "_first.h"
+#include "_first_defaults.h"
 #include "types.h"
 #include "memory.h"
 #include "errors.h"

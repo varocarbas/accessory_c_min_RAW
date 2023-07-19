@@ -7,6 +7,8 @@ output* __get_new_output(void*, type);
 
 output* __get_new_output_type(type);
 
+output* __update_output_value(output*, void*, type);
+
 output* __get_wrong_output_error(type, type_error, void*);
 
 output* __get_wrong_output_warning(type, type_warning, void*);

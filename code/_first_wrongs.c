@@ -1,11 +1,4 @@
-#include "headers/common.h"
-
-const char STRING_TERMINATION = '\0';
-
-char* SEPARATOR_DEFAULT = " --- ";
-char* SEPARATOR_PRINT_ARRAY_START = "{ ";
-char* SEPARATOR_PRINT_ARRAY_END = " }";
-char* SEPARATOR_PRINT_ARRAY_ITEMS = ", ";
+#include "headers/_first_wrongs.h"
 
 error_warning* WRONG_ERROR_WARNING = 0;
 output* WRONG_OUTPUT = 0;
