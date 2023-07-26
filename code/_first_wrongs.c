@@ -15,3 +15,4 @@ size_t WRONG_SIZE = 0;
 short WRONG_SHORT = 0;
 long WRONG_LONG = 0;
 double WRONG_DOUBLE = 0;
+int WRONG_I = -1;

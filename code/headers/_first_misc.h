@@ -1,5 +1,5 @@
-#ifndef FIRST_H_
-#define FIRST_H_
+#ifndef FIRST_MISC_H_
+#define FIRST_MISC_H_
 
 #include "_first_all.h"
 

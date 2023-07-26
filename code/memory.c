@@ -1,11 +1,21 @@
 #include "headers/memory.h"
 
+boolean pointer_is_ok(void* in_) { return ((in_ != WRONG_POINTER) ? TRUE : FALSE); }
+
 void* assign(void* out_, void* in_, const type type_, const size_t array_size_) { return _assign_internal(out_, in_, type_, (array_size_ > WRONG_SIZE), array_size_, FALSE); }
 
 void free_(void* in_h_, const type type_)
 {
-	if (type_ == OUTPUT) free_output(in_h_);
+	if (type_ == ERROR_WARNING) free_error_warning(in_h_);
+	else if (type_ == OUTPUT) free_output(in_h_);
 	else free(in_h_);
+}
+
+void free_error_warning(error_warning* in_h_)
+{
+	if (in_h_ != WRONG_ERROR_WARNING) free(in_h_->_message);
+
+	free(in_h_);
 }
 
 void free_output(output* in_h_)
@@ -22,7 +32,7 @@ void free_output(output* in_h_)
 
 void free_output_error_warning(output* in_h_)
 {
-	if (in_h_ != WRONG_OUTPUT && in_h_->_error_warning != WRONG_ERROR_WARNING) free(in_h_->_error_warning);
+	if (in_h_ != WRONG_OUTPUT) free_error_warning(in_h_->_error_warning);
 }
 
 void* __initialise(const size_t tot_elements_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_elements_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_elements_, type_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
@@ -92,7 +102,7 @@ void* __get_wrong_heap(const type type_, const boolean is_array_)
 	{
 		out = __initialise(size, type_, is_array_);
 
-		if (out != WRONG_POINTER) ((char*)out)[size] = STRING_TERMINATION;
+		if (pointer_is_ok(out) == TRUE) out = add_string_termination_internal(out, size);
 	}
 	else
 	{
@@ -108,7 +118,7 @@ void* get_wrong_stack(const type type_, const boolean is_array_)
 {
 	void* out;
 
-	if (is_array_ == TRUE) out = WRONG_POINTER;
+	if (is_array_ == TRUE || type_ == WRONG_TYPE) out = WRONG_POINTER;
 	else if (type_ == TYPE) out = &WRONG_TYPE;
 	else if (type_ == ERROR) out = &WRONG_ERROR;
 	else if (type_ == WARNING) out = &WRONG_WARNING;
@@ -131,23 +141,15 @@ void* __assign_free_internal(void* in_, const size_t tot_elements_, const type t
 {
 	size_t size = get_memory_size(tot_elements_, type_, TRUE);
 
-	void* out = _assign_internal(__initialise_internal(size), in_, type_, is_array_, size, TRUE);
+	void* out = __initialise_internal(size);
+
+	out = ((pointer_is_ok(out) == TRUE) ? _assign_internal(out, in_, type_, is_array_, size, TRUE) : __get_wrong_heap(type_, is_array_));
 
 	if (free_in_) free_(in_, type_);
 
 	return out;
 }
 
-void* _assign_internal(void* out_, void* in_, const type type_, const boolean is_array_, const size_t size_, const boolean is_heap_)
-{
-	if (out_ == WRONG_POINTER && is_heap_ == TRUE) out_ = __get_wrong_heap(type_, is_array_);
-	else
-	{
-		if (type_ == STRING) out_ = strcpy(out_, in_);
-		else out_ = memcpy(out_, in_, size_);
-	}
-
-	return out_;
-}
+void* _assign_internal(void* out_, void* in_, const type type_, const boolean is_array_, const size_t size_, const boolean is_heap_) { return (type_ == STRING ? strcpy(out_, in_) : memcpy(out_, in_, size_)); }
 
 void* __initialise_internal(const size_t size_) { return malloc(size_); }

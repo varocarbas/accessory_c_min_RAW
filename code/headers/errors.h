@@ -3,6 +3,10 @@
 
 #include "all.h"
 
-char* get_error_message(type_error, const void*);
+char* __get_error_message(type_error, void*);
+
+char* error_to_string(type_error);
+
+char* __error_to_string_full(type_error);
 
 #endif

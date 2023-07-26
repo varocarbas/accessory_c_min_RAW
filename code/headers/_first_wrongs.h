@@ -18,5 +18,6 @@ size_t WRONG_SIZE;
 short WRONG_SHORT;
 long WRONG_LONG;
 double WRONG_DOUBLE;
+int WRONG_I;
 
 #endif

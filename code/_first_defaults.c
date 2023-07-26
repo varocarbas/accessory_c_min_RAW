@@ -1,5 +1,9 @@
 #include "headers/_first_defaults.h"
 
+boolean DEFAULT_STRINGS_LENGTH_TRIM = TRUE;
+boolean DEFAULT_STRINGS_OK_TRIM = TRUE;
+boolean DEFAULT_STRINGS_EQUAL_NORMALISE = TRUE;
+
 char* DEFAULT_SEPARATOR = " --- ";
 char* DEFAULT_SEPARATOR_START = "{ ";
 char* DEFAULT_SEPARATOR_END = " }";

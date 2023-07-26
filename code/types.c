@@ -10,6 +10,49 @@ boolean type_is_struct(const type in_) { return (in_ == ERROR_WARNING || in_ == 
 
 boolean type_is_pointer(const type in_) { return (in_ == STRING || type_is_struct(in_) == TRUE); }
 
+boolean type_array_is_1d(const type in_) { return (type_array_is_2d(in_) == TRUE ? FALSE : TRUE); }
+
+boolean type_array_is_2d(const type in_) { return type_is_pointer(in_); }
+
+char* type_to_string(const type in_)
+{
+	char* out;
+
+	if (in_ == TYPE) out = "type";
+	else if (in_ == ERROR) out = "error";
+	else if (in_ == WARNING) out = "warning";
+	else if (in_ == ERROR_WARNING) out = "error_warning";
+	else if (in_ == OUTPUT) out = "output";
+	else if (in_ == BOOLEAN) out = "boolean";
+	else if (in_ == STRING) out = "string";
+	else if (in_ == CHAR) out = "char";
+	else if (in_ == INT) out = "int";
+	else if (in_ == SIZE) out = "size";
+	else if (in_ == SHORT) out = "short";
+	else if (in_ == LONG) out = "long";
+	else if (in_ == DOUBLE) out = "double";
+	else out = WRONG_STRING;
+
+	return out;
+}
+
+output* int_to_size(const int in_)
+{
+	output* out = __get_new_output_type(SIZE);
+
+	if (in_ >= 0)
+	{
+		size_t temp = (size_t)in_;
+
+		out = __update_output_value(out, size_pointer_to_void(&temp), SIZE);
+	}
+	else out = __update_output_error_warning_conversion(out, int_pointer_to_void((int*)&in_), INT, SIZE);
+
+	return out;
+}
+
+int size_to_int(const size_t in_) { return (int)in_; }
+
 char* get_type_format(const type in_)
 {
 	char* out;

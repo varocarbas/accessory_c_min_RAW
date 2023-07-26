@@ -3,6 +3,10 @@
 
 #include "all.h"
 
-char* get_warning_message(type_warning, const void*);
+char* __get_warning_message(type_warning, void*);
+
+char* warning_to_string(type_warning);
+
+char* __warning_to_string_full(type_warning);
 
 #endif

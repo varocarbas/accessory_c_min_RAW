@@ -3,9 +3,13 @@
 
 #include "all.h"
 
+boolean pointer_is_ok(void*);
+
 void* assign(void*, void*, type, size_t);
 
 void free_(void*, type);
+
+void free_error_warning(error_warning*);
 
 void free_output(output*);
 

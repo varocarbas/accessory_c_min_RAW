@@ -31,15 +31,15 @@ char* get_wrong_string_stack();
 
 char* __get_wrong_string_heap();
 
-size_t get_string_length(const char*);
+size_t get_string_length(char*);
 
-boolean string_is_ok(const char*);
+boolean string_is_ok(char*);
 
-boolean strings_are_equal(const char*, const char*);
+boolean strings_are_equal(char*, char*);
 
-char* __trim_string(const char*);
+char* __trim_string(char*);
 
-char* __substring(const char*, size_t, size_t);
+char* __substring(char*, size_t, size_t);
 
 char* __concatenate_strings(char**, size_t);
 
@@ -48,36 +48,6 @@ char* __concatenate_two_strings(char*, char*);
 void print_string(char*);
 
 char* get_string_format();
-
-char* _variable_to_string(void*, type);
-
-char* _custom_variable_to_string(void*, type);
-
-char* __native_variable_to_string(void*, type);
-
-boolean variable_to_string_is_heap(type);
-
-boolean custom_variable_to_string_is_heap(type);
-
-boolean native_variable_to_string_is_heap(type);
-
-char* type_to_string(type);
-
-char* error_to_string(type_error);
-
-char* __error_to_string_full(type_error);
-
-char* warning_to_string(type_warning);
-
-char* __warning_to_string_full(type_warning);
-
-char* __error_warning_to_string(const error_warning*);
-
-char* __output_to_string(const output*);
-
-char* _output_value_to_string(const output*);
-
-char* __output_value_to_string_full(const output*);
 
 char* boolean_to_string(boolean);
 
@@ -93,44 +63,46 @@ char* __long_to_string(long);
 
 char* __double_to_string(double);
 
-char* __normalise_string(const char*);
+char* __normalise_string(char*);
 
-char* __string_to_lower(const char*);
+char* __string_to_lower(char*);
 
-char* __string_to_upper(const char*);
+char* __string_to_upper(char*);
 
-output* __index_of_string(const char*, const char*, size_t);
+output* __index_of_string(char*, char*, size_t);
 
-size_t get_string_length_internal(const char*, boolean);
+int index_of_string_int(char*, char*, size_t);
 
-boolean string_is_ok_internal(const char*, boolean);
+size_t get_string_length_internal(char*, boolean);
 
-boolean strings_are_equal_internal(const char*, const char*, boolean);
+boolean string_is_ok_internal(char*, boolean);
 
-char* __trim_string_internal(const char*, size_t);
+boolean strings_are_equal_internal(char*, char*, boolean);
 
-size_t* __trim_string_start_length_internal(const char*, size_t);
+char* __trim_string_internal(char*, size_t);
 
-char* _substring_internal(char*, const char*, size_t, size_t, boolean);
+size_t* __trim_string_start_length_internal(char*, size_t);
 
-char* substring_common_internal(char*, const char*, size_t, size_t, size_t);
+char* _substring_internal(char*, char*, size_t, size_t, boolean);
 
-char* __concatenate_two_strings_internal(const char*, size_t, const char*, size_t);
+char* substring_common_internal(char*, char*, size_t, size_t, size_t);
 
-char* __concatenate_strings_internal(char**, size_t, const char*);
+char* __concatenate_two_strings_internal(char*, size_t, char*, size_t);
 
-char* __concatenate_strings_internal_add(char*, char**, const char*, size_t);
+char* __concatenate_strings_internal(char**, size_t, char*);
+
+char* __concatenate_strings_internal_add(char*, char**, char*, size_t);
 
 char* add_string_termination_internal(char*, size_t);
 
 void print_string_internal(char*, boolean);
 
-char* __normalise_string_internal(const char*, size_t);
+char* __normalise_string_internal(char*, size_t);
 
-char* __string_to_lower_upper_internal(const char*, size_t, boolean);
+char* __string_to_lower_upper_internal(char*, size_t, boolean);
 
-output* __index_of_string_internal(output*, const char*, const char*, boolean, size_t);
+int index_of_string_int_internal(char*, char*, boolean, size_t);
 
-output* __index_of_string_common_internal(output*, const char*, const char*, boolean, size_t);
+int index_of_string_int_common_internal(char*, char*, boolean, size_t);
 
 #endif
