@@ -11,30 +11,6 @@ void free_(void* in_h_, const type type_)
 	else free(in_h_);
 }
 
-void free_error_warning(error_warning* in_h_)
-{
-	if (in_h_ != WRONG_ERROR_WARNING) free(in_h_->_message);
-
-	free(in_h_);
-}
-
-void free_output(output* in_h_)
-{
-	if (in_h_ != WRONG_OUTPUT)
-	{
-		free(in_h_->_value);
-
-		free_output_error_warning(in_h_);
-	}
-
-	free(in_h_);
-}
-
-void free_output_error_warning(output* in_h_)
-{
-	if (in_h_ != WRONG_OUTPUT) free_error_warning(in_h_->_error_warning);
-}
-
 void* __initialise(const size_t tot_elements_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_elements_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_elements_, type_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
 
 void* __assign(void* in_, const size_t tot_elements_, const type type_, const boolean is_array_) { return __assign_free_internal(in_, tot_elements_, type_, is_array_, FALSE); }

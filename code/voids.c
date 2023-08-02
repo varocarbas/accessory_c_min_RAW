@@ -26,12 +26,6 @@ void* get_wrong_void_stack(const type type_) { return get_wrong_stack(type_, FAL
 
 void* __get_wrong_void_heap(const type type_) { return __get_wrong_heap(type_, FALSE); }
 
-void* _get_wrong_void_array(const type type_, const boolean is_heap_) { return _get_wrong(type_, TRUE, is_heap_); }
-
-void* get_wrong_void_array_stack(const type type_) { return get_wrong_stack(type_, TRUE); }
-
-void* __get_wrong_void_array_heap(const type type_) { return __get_wrong_heap(type_, TRUE); }
-
 boolean void_is_ok(void* in_) { return pointer_is_ok(in_); }
 
 boolean void_type_is_ok(void* in_, const type type_) { return ((void_is_ok(in_) == TRUE && ((type_ == STRING && string_is_ok(in_) == TRUE) || (type_ != STRING && in_ != get_wrong_void(type_)))) ? TRUE : FALSE); }
@@ -144,55 +138,6 @@ short* void_to_short_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : 
 long* void_to_long_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
 
 double* void_to_double_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
-
-void* get_void_array_item(void* in_, const size_t i_, const type type_)
-{
-	void* out;
-
-	if (void_type_is_ok(in_, type_) == FALSE) out = get_wrong_void(type_);
-	else if (type_ == TYPE) out = &void_to_type_array(in_)[i_];
-	else if (type_ == ERROR) out = &void_to_error_array(in_)[i_];
-	else if (type_ == WARNING) out = &void_to_warning_array(in_)[i_];
-	else if (type_ == ERROR_WARNING) out = void_to_error_warning_array(in_)[i_];
-	else if (type_ == OUTPUT) out = void_to_output_array(in_)[i_];
-	else if (type_ == BOOLEAN) out = &void_to_boolean_array(in_)[i_];
-	else if (type_ == STRING) out = void_to_string_array(in_)[i_];
-	else if (type_ == CHAR) out = &void_to_char_array(in_)[i_];
-	else if (type_ == INT) out = &void_to_int_array(in_)[i_];
-	else if (type_ == SIZE) out = &void_to_size_array(in_)[i_];
-	else if (type_ == SHORT) out = &void_to_short_array(in_)[i_];
-	else if (type_ == LONG) out = &void_to_long_array(in_)[i_];
-	else if (type_ == DOUBLE) out = &void_to_double_array(in_)[i_];
-	else out = get_wrong_void(type_);
-
-	return out;
-}
-
-type get_void_array_type_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_type(get_void_array_item(in_, i_, TYPE)) : WRONG_TYPE); }
-
-type_error get_void_array_error_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_error(get_void_array_item(in_, i_, ERROR)) : WRONG_ERROR); }
-
-type_warning get_void_array_warning_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_warning(get_void_array_item(in_, i_, WARNING)) : WRONG_WARNING); }
-
-error_warning* get_void_array_error_warning_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_error_warning(get_void_array_item(in_, i_, ERROR_WARNING)) : WRONG_ERROR_WARNING); }
-
-output* get_void_array_output_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_output(get_void_array_item(in_, i_, OUTPUT)) : WRONG_OUTPUT); }
-
-boolean get_void_array_boolean_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_boolean(get_void_array_item(in_, i_, BOOLEAN)) : WRONG_BOOLEAN); }
-
-char* get_void_array_string_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_string(get_void_array_item(in_, i_, STRING)) : WRONG_STRING); }
-
-char get_void_array_char_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_char(get_void_array_item(in_, i_, CHAR)) : WRONG_CHAR); }
-
-int get_void_array_int_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_int(get_void_array_item(in_, i_, INT)) : WRONG_INT); }
-
-size_t get_void_array_size_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_size(get_void_array_item(in_, i_, SIZE)) : WRONG_SIZE); }
-
-short get_void_array_short_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_short(get_void_array_item(in_, i_, SHORT)) : WRONG_SHORT); }
-
-long get_void_array_long_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_long(get_void_array_item(in_, i_, LONG)) : WRONG_LONG); }
-
-double get_void_array_double_item(void* in_, const size_t i_) { return (void_is_ok(in_) == TRUE ? void_to_double(get_void_array_item(in_, i_, DOUBLE)) : WRONG_DOUBLE); }
 
 void* update_void_value(void* out_, void* value_, const type type_)
 {

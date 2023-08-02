@@ -7,5 +7,6 @@ typedef enum { WRONG_TYPE0, TYPE, ERROR, WARNING, ERROR_WARNING, OUTPUT, BOOLEAN
 typedef enum { WRONG_ERROR0, ERROR_WRONG_INPUTS, ERROR_WRONG_CONVERSION } type_error;
 typedef enum { WRONG_WARNING0, WARNING_NOT_FOUND } type_warning;
 typedef enum { FALSE, TRUE } boolean;
+typedef enum { GET, ADD, UPDATE } action;
 
 #endif

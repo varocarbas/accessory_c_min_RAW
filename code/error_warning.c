@@ -4,6 +4,15 @@ error_warning* __get_new_error_warning_error(const type_error error_, void* furt
 
 error_warning* __get_new_error_warning_warning(const type_warning warning_, void* further_) { return __get_new_error_warning_internal(WRONG_ERROR, warning_, FALSE, further_); }
 
+void free_error_warning(error_warning* in_h_)
+{
+	if (error_warning_is_ok(in_h_) == TRUE) free(in_h_->_message);
+
+	free(in_h_);
+}
+
+boolean error_warning_is_ok(error_warning* in_) { return void_type_is_ok(in_, ERROR_WARNING); }
+
 char* error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? in_->_message : __get_wrong_string_heap()); }
 
 error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)

@@ -9,12 +9,6 @@ void* assign(void*, void*, type, size_t);
 
 void free_(void*, type);
 
-void free_error_warning(error_warning*);
-
-void free_output(output*);
-
-void free_output_error_warning(output*);
-
 void* __initialise(size_t, type, boolean);
 
 void* __assign(void*, size_t, type, boolean);

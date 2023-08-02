@@ -7,10 +7,10 @@
 #include "errors.h"
 #include "warnings.h"
 #include "error_warning.h"
+#include "voids.h"
 #include "output.h"
 #include "arrays.h"
 #include "strings.h"
-#include "voids.h"
 #include "misc.h"
 
 #endif

@@ -7,6 +7,10 @@ error_warning* __get_new_error_warning_error(type_error, void*);
 
 error_warning* __get_new_error_warning_warning(type_warning, void*);
 
+void free_error_warning(error_warning*);
+
+boolean error_warning_is_ok(error_warning*);
+
 char* error_warning_to_string(error_warning*);
 
 error_warning* __get_new_error_warning_internal(type_error, type_warning, boolean, void*);

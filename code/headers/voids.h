@@ -29,12 +29,6 @@ void* get_wrong_void_stack(type);
 
 void* __get_wrong_void_heap(type);
 
-void* _get_wrong_void_array(type, boolean);
-
-void* get_wrong_void_array_stack(type);
-
-void* __get_wrong_void_array_heap(type);
-
 boolean void_is_ok(void*);
 
 boolean void_type_is_ok(void*, type);
@@ -104,34 +98,6 @@ short* void_to_short_array(void*);
 long* void_to_long_array(void*);
 
 double* void_to_double_array(void*);
-
-void* get_void_array_item(void*, size_t, type);
-
-type get_void_array_type_item(void*, size_t);
-
-type_error get_void_array_error_item(void*, size_t);
-
-type_warning get_void_array_warning_item(void*, size_t);
-
-error_warning* get_void_array_error_warning_item(void*, size_t);
-
-output* get_void_array_output_item(void*, size_t);
-
-boolean get_void_array_boolean_item(void*, size_t);
-
-char* get_void_array_string_item(void*, size_t);
-
-char get_void_array_char_item(void*, size_t);
-
-int get_void_array_int_item(void*, size_t);
-
-size_t get_void_array_size_item(void*, size_t);
-
-short get_void_array_short_item(void*, size_t);
-
-long get_void_array_long_item(void*, size_t);
-
-double get_void_array_double_item(void*, size_t);
 
 void* update_void_value(void*, void*, type);
 
