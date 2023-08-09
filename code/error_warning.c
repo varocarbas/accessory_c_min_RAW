@@ -6,7 +6,7 @@ error_warning* __get_new_error_warning_warning(const type_warning warning_, void
 
 void free_error_warning(error_warning* in_h_)
 {
-	if (error_warning_is_ok(in_h_) == TRUE) free(in_h_->_message);
+	if (error_warning_is_ok(in_h_) == TRUE) free_string(in_h_->_message);
 
 	free(in_h_);
 }
@@ -70,7 +70,7 @@ char* __error_warning_to_string_full_internal(const type_error error_, const typ
 
 	char* out = __concatenate_strings_internal(items, 2, DEFAULT_SEPARATOR);
 
-	free_(key, STRING);
+	free_min(key, STRING);
 
 	return out;
 }

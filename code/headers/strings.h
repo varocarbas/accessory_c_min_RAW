@@ -23,6 +23,8 @@ char* __assign_free_wrong_string(char*);
 
 char* __assign_free_both_wrong_string(char*, char*);
 
+void free_string(char*);
+
 void free_string_array(char**, size_t);
 
 char* _get_wrong_string(boolean);
@@ -115,7 +117,7 @@ int index_of_string_int_common_internal(char*, char*, boolean, size_t);
 
 size_t get_matches_in_string_internal(char*, char*, boolean);
 
-output* __split_string_internal(char*, char*, boolean);
+output* __split_string_internal(char*, size_t, char*, size_t, boolean);
 
 void* __split_matches_string_internal(char*, char*, boolean, boolean);
 

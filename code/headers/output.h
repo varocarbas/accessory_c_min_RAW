@@ -3,11 +3,17 @@
 
 #include "all.h"
 
-output* __get_new_output(void*, type, size_t);
+output* __get_new_output(void*, size_t, type);
 
 output* __get_new_output_type(type);
 
-output* __get_new_output_array(size_t);
+output* __get_new_output_array(void*, size_t, type, boolean);
+
+output* __get_new_output_array_min(size_t);
+
+output* __get_wrong_output_error(type, type_error, void*);
+
+output* __get_wrong_output_warning(type, type_warning, void*);
 
 void free_output(output*);
 
@@ -18,6 +24,8 @@ boolean output_value_is_ok(output*);
 boolean output_array_value_is_ok(output*);
 
 boolean output_value_is_array(output*);
+
+boolean output_value_is_array_size(size_t);
 
 type get_output_type_value(output*, boolean);
 
@@ -60,10 +68,6 @@ output* __update_output_error_warning_error(output*, type_error, void*);
 output* update_output_error_warning_warning(output*, type_warning, void*);
 
 output* __update_output_error_warning_conversion(output*, void*, type, type);
-
-output* __get_wrong_output_error(type, type_error, void*);
-
-output* __get_wrong_output_warning(type, type_warning, void*);
 
 void free_output_value_internal(output*);
 

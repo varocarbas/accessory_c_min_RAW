@@ -31,9 +31,9 @@ void* get_wrong_array_stack();
 
 void* __get_wrong_array_heap();
 
-boolean array_is_ok(void*, size_t, type);
+boolean is_array(size_t);
 
-size_t get_initial_array_size(size_t, type, boolean);
+boolean array_is_ok(void*, size_t, type);
 
 void* __reduce_array_size(void*, size_t, type, boolean);
 
@@ -81,8 +81,6 @@ void print_array(void*, size_t, type);
 
 char* __array_to_string(void*, size_t, type);
 
-char* _print_array_to_string_internal(void*, size_t, type, boolean);
-
 boolean array_is_ok_internal(void*);
 
 void* __assign_array_internal(void*, void*, size_t, type, boolean, boolean);
@@ -95,8 +93,13 @@ void* add_update_1d_array_internal(void*, void*, size_t, type, action);
 
 void* _add_update_2d_array_internal(void*, void*, size_t, type, action);
 
+char* _print_array_to_string_internal(void*, size_t, type, boolean);
+void* TEST(void*, size_t, type);
+
 void print_array_start_end_internal(boolean);
 
 void print_array_item_internal(size_t, size_t, void*, char*, type);
+
+char* __array_to_string_internal(char*, void*, size_t, type, boolean);
 
 #endif

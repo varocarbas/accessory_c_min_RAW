@@ -127,6 +127,8 @@ void* __long_to_void(long);
 
 void* __double_to_void(double);
 
+void* array_to_void(void*);
+
 void* pointer_to_void(void*, type);
 
 void* type_pointer_to_void(type*);

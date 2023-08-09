@@ -1,6 +1,6 @@
 #include "headers/voids.h"
 
-void* assign_void(void* out_, void* in_, const type type_) { return (void_type_is_ok(in_, type_) == TRUE ? assign(out_, in_, type_, WRONG_SIZE) : get_wrong_void_stack(type_)); }
+void* assign_void(void* out_, void* in_, const type type_) { return (void_type_is_ok(in_, type_) == TRUE ? assign(out_, in_, WRONG_SIZE, type_) : get_wrong_void_stack(type_)); }
 
 void* __initialise_void(const type type_) { return __initialise(1, type_, FALSE); }
 
@@ -24,7 +24,7 @@ void* _get_wrong_void(const type type_, const boolean is_heap_) { return _get_wr
 
 void* get_wrong_void_stack(const type type_) { return get_wrong_stack(type_, FALSE); }
 
-void* __get_wrong_void_heap(const type type_) { return __get_wrong_heap(type_, FALSE); }
+void* __get_wrong_void_heap(const type type_) {	return __get_wrong_heap(type_, FALSE); }
 
 boolean void_is_ok(void* in_) { return pointer_is_ok(in_); }
 
@@ -81,8 +81,8 @@ char* __concatenate_two_voids(void* in1_, const type type1_, void* in2_, const t
 
 	char* out = ((length1 > WRONG_SIZE && length2 > WRONG_SIZE) ? __concatenate_two_strings_internal(in1, length1, in2, length2) : __get_wrong_string_heap());
 
-	if (void_to_string_is_heap(type1_)) free(in1);
-	if (void_to_string_is_heap(type2_)) free(in2);
+	if (void_to_string_is_heap(type1_)) free_string(in1);
+	if (void_to_string_is_heap(type2_)) free_string(in2);
 
 	return out;
 }
@@ -333,6 +333,8 @@ void* __double_to_void(const double in_)
 
 	return out;
 }
+
+void* array_to_void(void* in_) { return in_; }
 
 void* pointer_to_void(void* in_, type type_)
 {

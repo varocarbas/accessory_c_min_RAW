@@ -1,10 +1,10 @@
 #include "headers/strings.h"
 
-char* assign_string(char* out_, char* in_) { return (string_is_ok(in_) == TRUE ? assign(out_, in_, STRING, WRONG_SIZE) : get_wrong_string_stack()); }
+char* assign_string(char* out_, char* in_) { return (string_is_ok(in_) == TRUE ? assign(out_, in_, WRONG_SIZE, STRING) : get_wrong_string_stack()); }
 
 char* __initialise_string(const size_t length_) { return __initialise(length_, STRING, FALSE); }
 
-char** __initialise_string_array(const size_t size_) { return __initialise(size_ - 1, STRING, FALSE); }
+char** __initialise_string_array(const size_t size_) { return __initialise(size_, STRING, TRUE); }
 
 char* __assign_string(char* in_)
 {
@@ -39,6 +39,8 @@ char* __assign_wrong_string() { return __assign_wrong(0, STRING, FALSE); }
 char* __assign_free_wrong_string(char* in_out_h_) { return __assign_free_wrong(in_out_h_, 0, STRING, FALSE); }
 
 char* __assign_free_both_wrong_string(char* out_h_, char* in_h_) { return __assign_free_both_wrong(out_h_, in_h_, 0, STRING, FALSE); }
+
+void free_string(char* in_h_) { free_min(in_h_, STRING); }
 
 void free_string_array(char** in_h_, const size_t size_) { free_2d_array(in_h_, size_, STRING); }
 
@@ -126,7 +128,7 @@ output* __index_of_string(char* needle_, char* haystack_, const size_t start_i_)
 
 		if (is_ok == TRUE) out = __update_output_value(out, temp->_value, SIZE);
 
-		free_(temp, OUTPUT);
+		free_output(temp);
 	}
 
 	if (is_ok == FALSE) out = (is_error == TRUE ? __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, "__index_of_string") : update_output_error_warning_warning(out, WARNING_NOT_FOUND, "__index_of_string"));
@@ -138,7 +140,13 @@ int index_of_string_int(char* needle_, char* haystack_, const size_t start_i_) {
 
 size_t get_matches_in_string(char* needle_, char* haystack_) { return ((string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE) ? get_matches_in_string_internal(needle_, haystack_, DEFAULT_STRINGS_MATCHES_NORMALISE) : 0); }
 
-output* __split_string(char* needle_, char* haystack_) { return ((string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE) ? __split_string_internal(needle_, haystack_, DEFAULT_STRINGS_SPLIT_NORMALISE) : __get_wrong_array_heap()); }
+output* __split_string(char* needle_, char* haystack_)
+{
+	size_t length_needle = get_string_length_internal(needle_, FALSE);
+	size_t length_haystack = get_string_length_internal(haystack_, FALSE);
+
+	return ((length_haystack > WRONG_SIZE && length_needle > WRONG_SIZE && length_needle < length_haystack) ? __split_string_internal(needle_, length_needle, haystack_, length_haystack, DEFAULT_STRINGS_SPLIT_NORMALISE) : __get_wrong_output_error(STRING, ERROR_WRONG_INPUTS, "__split_string"));
+}
 
 void print_string(char* in_) { print((string_is_ok(in_) == TRUE ? in_ : WRONG_STRING), STRING); }
 
@@ -249,6 +257,7 @@ char** update_string_array(char** array_, char* value_, const size_t i_) { retur
 size_t get_string_length_internal(char* in_, const boolean trim_)
 {
 	size_t out = WRONG_SIZE;
+	if (in_ == WRONG_POINTER) return out;
 
 	if (trim_ == TRUE)
 	{
@@ -256,7 +265,7 @@ size_t get_string_length_internal(char* in_, const boolean trim_)
 
 		out = strlen(in);
 
-		free_(in, STRING);
+		free_string(in);
 	}
 	else out = strlen(in_);
 
@@ -276,8 +285,8 @@ boolean strings_are_equal_internal(char* in1_, char* in2_, const boolean normali
 
 		out = strcmp(in1, in2);
 
-		free_(in1, STRING);
-		free_(in2, STRING);
+		free_string(in1);
+		free_string(in2);
 	}
 	else out = strcmp(in1_, in2_);
 
@@ -288,13 +297,15 @@ char* __trim_string_internal(char* in_, const size_t length_)
 {
 	char* out;
 
-	size_t* start_length = __trim_string_start_length_internal(in_, (length_ > WRONG_SIZE ? length_ : get_string_length_internal(in_, FALSE)));
+	size_t length = (length_ > WRONG_SIZE ? length_ : get_string_length_internal(in_, FALSE));
+
+	size_t* start_length = (length > WRONG_SIZE ? __trim_string_start_length_internal(in_, length) : WRONG_POINTER);
 
 	if (pointer_is_ok(start_length) == TRUE)
 	{
 		out = (start_length[1] > WRONG_SIZE ? __substring(in_, start_length[0], start_length[1]) : __get_wrong_string_heap());
 
-		free_(start_length, SIZE);
+		free_min(start_length, SIZE);
 	}
 	else out = __get_wrong_string_heap();
 
@@ -450,9 +461,9 @@ char* __normalise_string_internal(char* in_, const size_t length_)
 {
 	char* temp = __trim_string_internal(in_, length_);
 
-	char* out = __string_to_lower_upper_internal(temp, length_, TRUE);
+	char* out = __string_to_lower_upper_internal(temp, get_string_length_internal(temp, FALSE), TRUE);
 
-	free_(temp, STRING);
+	free_string(temp);
 
 	return out;
 }
@@ -477,7 +488,7 @@ int index_of_string_int_internal(char* needle_, char* haystack_, const boolean n
 
 		out = index_of_string_int_common_internal(needle, haystack_, normalise_, start_i_);
 
-		free_(needle, STRING);
+		free_string(needle);
 	}
 	else out = index_of_string_int_common_internal(needle_, haystack_, normalise_, start_i_);
 
@@ -521,7 +532,7 @@ int index_of_string_int_common_internal(char* needle_, char* haystack_, const bo
 		}
 		else is_ok = strings_are_equal_internal(temp, needle_, FALSE);
 
-		free_(temp, STRING);
+		free_string(temp);
 
 		if (is_ok == TRUE) return size_to_int(i);
 	}
@@ -535,13 +546,15 @@ size_t get_matches_in_string_internal(char* needle_, char* haystack_, const bool
 
 	size_t out = void_to_size(temp);
 
-	free_(temp, SIZE);
+	free_min(temp, SIZE);
 
 	return out;
 }
 
-output* __split_string_internal(char* needle_, char* haystack_, const boolean normalise_)
+output* __split_string_internal(char* needle_, const size_t length_needle_, char* haystack_, const size_t length_haystack_, const boolean normalise_)
 {
+	type type0 = STRING;
+
 	output* temp = void_to_output(__split_matches_string_internal(needle_, haystack_, normalise_, TRUE));
 
 	if (output_array_value_is_ok(temp) == FALSE)
@@ -550,14 +563,63 @@ output* __split_string_internal(char* needle_, char* haystack_, const boolean no
 
 		char* temp2[] = { haystack_ };
 
-		return __get_new_output(temp2, STRING, 1);
+		return __get_new_output(temp2, 1, type0);
 	}
 
+	size_t* is = temp->_value;
+	size_t tot_is = temp->_size;
+
+	size_t tot0 = tot_is + 1;
+
+	char** items = __initialise_array(tot0, type0);
+
+	size_t i0 = 0;
+	size_t i = 0;
+	size_t i2 = 0;
+
+	size_t length = 0;
 	size_t tot = 1;
 
-	char* items[] = { haystack_ };
+	for (i0 = 0; i0 < tot_is; i0++)
+	{
+		if (i > is[i0]) continue;
 
-	return __get_new_output(items, STRING, tot);
+		length = is[i0] - i;
+
+		if (length > 0)
+		{
+			char* temp2 = __substring(haystack_, i, length);
+
+			items = _add_to_array(items, string_pointer_to_void(temp2), i2, type0);
+
+			free_string(temp2);
+		}
+		else items = _add_to_array(items, string_pointer_to_void(WRONG_STRING), i2, type0);
+
+		i = is[i0] + length_needle_;
+		i2++;
+		tot++;
+
+		if (i >= length_haystack_) break;
+	}
+
+	length = length_haystack_ - i;
+
+	if (length > 0)
+	{
+		char* temp2 = __substring(haystack_, i, length);
+
+		items = _add_to_array(items, string_pointer_to_void(temp2), i2, type0);
+
+		free_string(temp2);
+	}
+	else items = _add_to_array(items, string_pointer_to_void(WRONG_STRING), i2, type0);
+
+	if (tot < tot0) items = __reduce_array_size(items, tot, type0, TRUE);
+
+	free_output(temp);
+
+	return __get_new_output_array(items, tot, STRING, TRUE);
 }
 
 void* __split_matches_string_internal(char* needle_, char* haystack_, const boolean normalise_, const boolean is_split_)
@@ -591,7 +653,7 @@ void* __split_matches_string_internal(char* needle_, char* haystack_, const bool
 		}
 		else
 		{
-			free_(temp, OUTPUT);
+			free_output(temp);
 
 			break;
 		}
@@ -601,12 +663,12 @@ void* __split_matches_string_internal(char* needle_, char* haystack_, const bool
 
 	if (is_split_ == TRUE)
 	{
-		if (tot == 0) out = __get_new_output_array(tot);
+		if (tot == 0) out = __get_new_output_array_min(tot);
 		else
 		{
 			void* temp2 = __reduce_array_size(is, tot, type0, TRUE);
 
-			output* temp3 = __get_new_output(temp2, type0, tot);
+			output* temp3 = __get_new_output(temp2, tot, type0);
 
 			out = output_pointer_to_void(temp3);
 

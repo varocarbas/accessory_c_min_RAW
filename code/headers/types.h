@@ -25,6 +25,6 @@ int size_to_int(size_t);
 
 char* get_type_format(type);
 
-size_t get_type_size(type);
+size_t get_type_size(type, boolean);
 
 #endif
