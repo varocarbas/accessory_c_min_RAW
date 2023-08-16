@@ -69,9 +69,13 @@ output* update_output_error_warning_warning(output*, type_warning, void*);
 
 output* __update_output_error_warning_conversion(output*, void*, type, type);
 
+output* __initialise_output_internal(output);
+
 void free_output_value_internal(output*);
 
 void free_output_error_warning_internal(output*);
+
+output* __assign_free_output_item_internal(output*, output*);
 
 char* __output_array_value_to_string_internal(output*);
 

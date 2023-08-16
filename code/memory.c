@@ -4,65 +4,53 @@ boolean pointer_is_ok(void* in_) { return ((in_ != WRONG_POINTER) ? TRUE : FALSE
 
 void* assign(void* out_, void* in_, const size_t array_size_, const type type_) { return _assign_internal(out_, in_, array_size_, type_, (array_size_ > WRONG_SIZE)); }
 
-void* __initialise(const size_t tot_elements_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_elements_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_elements_, type_, is_array_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
+void* __initialise(const size_t tot_items_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_items_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_items_, type_, is_array_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
 
-void* __assign(void* in_, const size_t tot_elements_, const type type_, const boolean is_array_) { return __assign_free_internal(in_, tot_elements_, type_, is_array_, FALSE); }
-
-void* __assign_free_in(void* in_h_, const size_t tot_elements_, const type type_, const boolean is_array_) { return __assign_free_internal(in_h_, tot_elements_, type_, is_array_, TRUE); }
-
-void* __assign_free_out(void* out_h_, void* in_, const size_t tot_elements_, const type type_, const boolean is_array_)
+void* __initialise_custom(void* in_, const type type_)
 {
-	free_(out_h_, (is_array_ == TRUE ? tot_elements_ : WRONG_SIZE), type_);
+	void* out;
 
-	out_h_ = __assign_free_internal(in_, tot_elements_, type_, is_array_, FALSE);
+	if (void_type_is_ok(in_, type_) == FALSE) out = __get_wrong_void_heap(type_);
+	else if (type_ == ERROR_WARNING) out = __initialise_error_warning_internal(*((error_warning*)in_));
+	else if (type_ == OUTPUT) out = __initialise_output_internal(*((output*)in_));
+	else out = __get_wrong_void_heap(type_);
+
+	return out;
+}
+
+void* __assign(void* in_, const size_t tot_items_, const type type_, const boolean is_array_) { return __assign_free_internal(in_, tot_items_, type_, is_array_, FALSE); }
+
+void* __assign_free_in(void* in_h_, const size_t tot_items_, const type type_, const boolean is_array_) { return __assign_free_internal(in_h_, tot_items_, type_, is_array_, TRUE); }
+
+void* __assign_free_out(void* out_h_, void* in_, const size_t tot_items_, const type type_, const boolean is_array_)
+{
+	free_(out_h_, (is_array_ == TRUE ? tot_items_ : WRONG_SIZE), type_);
+
+	out_h_ = __assign_free_internal(in_, tot_items_, type_, is_array_, FALSE);
 
 	return out_h_;
 }
 
-void* __assign_free_both(void* out_h_, void* in_h_, const size_t tot_elements_, const type type_, const boolean is_array_)
+void* __assign_free_both(void* out_h_, void* in_h_, const size_t tot_items_, const type type_, const boolean is_array_)
 {
-	free_(out_h_, (is_array_ == TRUE ? tot_elements_ : WRONG_SIZE), type_);
+	free_(out_h_, (is_array_ == TRUE ? tot_items_ : WRONG_SIZE), type_);
 
-	out_h_ = __assign_free_internal(in_h_, tot_elements_, type_, is_array_, TRUE);
+	out_h_ = __assign_free_internal(in_h_, tot_items_, type_, is_array_, TRUE);
 
 	return out_h_;
-}
-
-void* __assign_wrong(const size_t tot_elements_, const type type_, const boolean is_array_) { return __assign_free_in(__get_wrong_heap(type_, is_array_), tot_elements_, type_, is_array_); }
-
-void* __assign_free_wrong(void* in_out_h_, const size_t tot_elements_, const type type_, const boolean is_array_)
-{
-	free_(in_out_h_, (is_array_ == TRUE ? tot_elements_ : WRONG_SIZE), type_);
-
-	return __assign_wrong(tot_elements_, type_, is_array_);
-}
-
-void* __assign_free_both_wrong(void* out_h_, void* in_h_, const size_t tot_elements_, const type type_, const boolean is_array_)
-{
-	free_(out_h_, (is_array_ == TRUE ? tot_elements_ : WRONG_SIZE), type_);
-	free_(in_h_, (is_array_ == TRUE ? tot_elements_ : WRONG_SIZE), type_);
-
-	return __assign_wrong(tot_elements_, type_, is_array_);
 }
 
 void free_(void* in_h_, const size_t size_array_, const type type_)
 {
 	if (is_array(size_array_) == TRUE) free_array(in_h_, size_array_, type_);
-	else free_min(in_h_, type_);
+	else free_internal(in_h_, type_, FALSE);
 }
 
-void free_min(void* in_h_, const type type_)
+size_t get_memory_size(const size_t tot_items_, const type type_, const boolean is_2d_array_, const boolean is_heap_)
 {
-	if (type_ == ERROR_WARNING) free_error_warning(in_h_);
-	else if (type_ == OUTPUT) free_output(in_h_);
-	else free(in_h_);
-}
+    if (type_ == WRONG_TYPE || (tot_items_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_array_) : WRONG_SIZE);
 
-size_t get_memory_size(const size_t tot_elements_, const type type_, const boolean is_2d_array_, const boolean is_heap_)
-{
-    if (type_ == WRONG_TYPE || (tot_elements_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_array_) : WRONG_SIZE);
-
-    size_t out = tot_elements_;
+    size_t out = tot_items_;
     if (type_ == STRING && is_2d_array_ == FALSE) out++;
 
     if (is_heap_) out *= get_type_size(type_, is_2d_array_);
@@ -119,17 +107,74 @@ void* get_wrong_stack(const type type_, const boolean is_array_)
 	return out;
 }
 
-void* __assign_free_internal(void* in_, const size_t tot_elements_, const type type_, const boolean is_array_, const boolean free_in_)
+void* __get_wrong_free(void* in_out_h_, const size_t array_size_, const type type_)
 {
-	size_t size = get_memory_size(tot_elements_, type_, is_array_, TRUE);
+	free_(in_out_h_, array_size_, type_);
+
+	return __get_wrong_heap(type_, FALSE);
+}
+
+void* __get_wrong_free_both(void* out_h_, void* in_h_, const size_t array_size_, const type type_)
+{
+	free_(out_h_, array_size_, type_);
+	free_(in_h_, array_size_, type_);
+
+	return __get_wrong_heap(type_, FALSE);
+}
+
+void free_internal(void* in_h_, const type type_, const boolean only_native_)
+{
+	if (only_native_ == TRUE) free(in_h_);
+	else if (type_ == ERROR_WARNING) free_error_warning(in_h_);
+	else if (type_ == OUTPUT) free_output(in_h_);
+	else free(in_h_);
+}
+
+void* __assign_free_internal(void* in_, const size_t tot_items_, const type type_, const boolean is_array_, const boolean free_in_)
+{
+	size_t size = get_memory_size(tot_items_, type_, is_array_, TRUE);
 
 	void* out = __initialise_internal(size);
 
 	out = ((pointer_is_ok(out) == TRUE) ? _assign_internal(out, in_, size, type_, is_array_) : __get_wrong_heap(type_, is_array_));
 
-	if (free_in_) free_(in_, (is_array_ ? tot_elements_ : WRONG_SIZE), type_);
+	if (pointer_is_ok(out) == TRUE)
+	{
+		if (type_is_custom(type_) == TRUE) out = __assign_free_custom_internal(out, in_, (is_array_ ? tot_items_ : WRONG_SIZE), type_);
+	}
+	else out = __get_wrong_heap(type_, is_array_);
+
+	if (free_in_) free_(in_, (is_array_ ? tot_items_ : WRONG_SIZE), type_);
 
 	return out;
+}
+
+void* __assign_free_custom_internal(void* out_, void* in_, const size_t tot_items_, const type type_)
+{
+	if (tot_items_ == WRONG_SIZE) return __assign_free_custom_item_internal(out_, in_, type_);
+	else if (array_is_ok(out_, tot_items_, type_) == FALSE || array_is_ok(in_, tot_items_, type_) == FALSE) return out_;
+
+	for (size_t i = 0; i < tot_items_; i++)
+	{
+		void* out = __assign_void(get_2d_array_item(out_, i, type_), type_);
+		void* in = __assign_void(get_2d_array_item(in_, i, type_), type_);
+
+		if (type_ == ERROR_WARNING) ((error_warning**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);
+		else if (type_ == OUTPUT) ((output**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);
+
+		free_void(out, type_);
+		free_void(in, type_);
+	}
+
+	return out_;
+}
+
+void* __assign_free_custom_item_internal(void* out_, void* in_, const type type_)
+{
+	if (type_ == ERROR_WARNING) out_ = __assign_free_error_warning_item_internal(out_, in_);
+	else if (type_ == OUTPUT) out_ = __assign_free_output_item_internal(out_, in_);
+
+	return out_;
 }
 
 void* _assign_internal(void* out_, void* in_, const size_t size_, const type type_, const boolean is_array_) { return (type_ == STRING ? strcpy(out_, in_) : memcpy(out_, in_, size_)); }

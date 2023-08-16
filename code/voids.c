@@ -1,22 +1,58 @@
 #include "headers/voids.h"
 
-void* assign_void(void* out_, void* in_, const type type_) { return (void_type_is_ok(in_, type_) == TRUE ? assign(out_, in_, WRONG_SIZE, type_) : get_wrong_void_stack(type_)); }
+void* assign_void(void* out_, void* in_, const type type_)
+{
+	void* out;
 
-void* __initialise_void(const type type_) { return __initialise(1, type_, FALSE); }
+	if (type_ == STRING) out = assign_string(out_, in_);
+	else out = (void_type_is_ok(in_, type_) == TRUE ? assign(out_, in_, WRONG_SIZE, type_) : get_wrong_void_stack(type_));
 
-void* __assign_void(void* in_, const type type_) { return (void_type_is_ok(in_, type_) == TRUE ? __assign(in_, 1, type_, FALSE) : __get_wrong_void_heap(type_)); }
+	return out;
+}
 
-void* __assign_free_in_void(void* in_h_, const type type_) { return (void_type_is_ok(in_h_, type_) == TRUE ? __assign_free_in(in_h_, 1, type_, FALSE) : __assign_free_wrong_void(in_h_, type_)); }
+void* __initialise_void(const type type_) { return (type_ == STRING ? __get_wrong_string_heap() : __initialise(1, type_, FALSE)); }
 
-void* __assign_free_out_void(void* out_h_, void* in_, const type type_) { return (void_type_is_ok(in_, type_) == TRUE ? __assign_free_out(out_h_, in_, 1, type_, FALSE) : __assign_free_wrong_void(out_h_, type_)); }
+void* __assign_void(void* in_, const type type_)
+{
+	void* out;
 
-void* __assign_free_both_void(void* out_h_, void* in_h_, const type type_) { return (void_type_is_ok(in_h_, type_) == TRUE ? __assign_free_both(out_h_, in_h_, 1, type_, FALSE) : __assign_free_both_wrong_void(out_h_, in_h_, type_)); }
+	if (type_ == STRING) out = __assign_string(in_);
+	else out = (void_type_is_ok(in_, type_) == TRUE ? __assign(in_, 1, type_, FALSE) : __get_wrong_void_heap(type_));
 
-void* __assign_wrong_void(const type type_) { return __assign_wrong(0, type_, FALSE); }
+	return out;
+}
 
-void* __assign_free_wrong_void(void* in_out_h_, const type type_) { return __assign_free_wrong(in_out_h_, 0, type_, FALSE); }
+void* __assign_free_in_void(void* in_h_, const type type_)
+{
+	void* out;
 
-void* __assign_free_both_wrong_void(void* out_h_, void* in_h_, const type type_) { return __assign_free_both_wrong(out_h_, in_h_, 0, type_, FALSE); }
+	if (type_ == STRING) out = __assign_free_in_string(in_h_);
+	else out = (void_type_is_ok(in_h_, type_) == TRUE ? __assign_free_in(in_h_, 1, type_, FALSE) : __get_wrong_void_free(in_h_, type_));
+
+	return out;
+}
+
+void* __assign_free_out_void(void* out_h_, void* in_, const type type_)
+{
+	void* out;
+
+	if (type_ == STRING) out = __assign_free_out_string(out_h_, in_);
+	else out = (void_type_is_ok(in_, type_) == TRUE ? __assign_free_out(out_h_, in_, 1, type_, FALSE) : __get_wrong_void_free(out_h_, type_));
+
+	return out;
+}
+
+void* __assign_free_both_void(void* out_h_, void* in_h_, const type type_)
+{
+	void* out;
+
+	if (type_ == STRING) out = __assign_free_both_string(out_h_, in_h_);
+	else out = (void_type_is_ok(in_h_, type_) == TRUE ? __assign_free_both(out_h_, in_h_, 1, type_, FALSE) : __get_wrong_void_free_both(out_h_, in_h_, type_));
+
+	return out;
+}
+
+void free_void(void* in_h_, const type type_) { free_internal(in_h_, type_, FALSE); }
 
 void* get_wrong_void(const type type_) { return get_wrong_void_stack(type_); }
 
@@ -25,6 +61,10 @@ void* _get_wrong_void(const type type_, const boolean is_heap_) { return _get_wr
 void* get_wrong_void_stack(const type type_) { return get_wrong_stack(type_, FALSE); }
 
 void* __get_wrong_void_heap(const type type_) {	return __get_wrong_heap(type_, FALSE); }
+
+void* __get_wrong_void_free(void* in_out_h_, const type type_) { return (type_ == STRING ? __get_wrong_string_free(in_out_h_) : __get_wrong_free(in_out_h_, 0, type_)); }
+
+void* __get_wrong_void_free_both(void* out_h_, void* in_h_, const type type_) { return (type_ == STRING ? __get_wrong_string_free_both(out_h_, in_h_) : __get_wrong_free_both(out_h_, in_h_, 0, type_)); }
 
 boolean void_is_ok(void* in_) { return pointer_is_ok(in_); }
 
@@ -336,7 +376,7 @@ void* __double_to_void(const double in_)
 
 void* array_to_void(void* in_) { return in_; }
 
-void* pointer_to_void(void* in_, type type_)
+void* pointer_to_void(void* in_, const type type_)
 {
 	void* out;
 

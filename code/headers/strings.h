@@ -17,12 +17,6 @@ char* __assign_free_out_string(char*, char*);
 
 char* __assign_free_both_string(char*, char*);
 
-char* __assign_wrong_string();
-
-char* __assign_free_wrong_string(char*);
-
-char* __assign_free_both_wrong_string(char*, char*);
-
 void free_string(char*);
 
 void free_string_array(char**, size_t);
@@ -32,6 +26,10 @@ char* _get_wrong_string(boolean);
 char* get_wrong_string_stack();
 
 char* __get_wrong_string_heap();
+
+char* __get_wrong_string_free(char*);
+
+char* __get_wrong_string_free_both(char*, char*);
 
 size_t get_string_length(char*);
 
@@ -101,7 +99,7 @@ char* __concatenate_two_strings_internal(char*, size_t, char*, size_t);
 
 char* __concatenate_strings_internal(char**, size_t, char*);
 
-char* __concatenate_strings_internal_add(char*, char**, char*, size_t);
+char* __concatenate_strings_add_internal(char*, char**, char*, size_t);
 
 char* add_string_termination_internal(char*, size_t);
 

@@ -19,9 +19,23 @@ error_warning* __get_new_error_warning_internal(const type_error error_, const t
 {
 	error_warning temp = { error_, warning_, is_error_, __get_error_warning_message_internal(error_, warning_, is_error_, further_) };
 
-	error_warning* out = __assign_void(&temp, ERROR_WARNING);
+	return __initialise_custom(&temp, ERROR_WARNING);
+}
+
+error_warning* __initialise_error_warning_internal(error_warning instance_)
+{
+	error_warning* out = __initialise_void(ERROR_WARNING);
+
+	*out = instance_;
 
 	return out;
+}
+
+error_warning* __assign_free_error_warning_item_internal(error_warning* out_, error_warning* in_)
+{
+	if (error_warning_is_ok(out_) == TRUE && error_warning_is_ok(in_) == TRUE) out_->_message = __assign_string(in_->_message);
+
+	return out_;
 }
 
 char* __get_error_warning_message_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_) { return (is_error_ ? __get_error_message(error_, further_) : __get_warning_message(warning_, further_)); }
@@ -70,7 +84,7 @@ char* __error_warning_to_string_full_internal(const type_error error_, const typ
 
 	char* out = __concatenate_strings_internal(items, 2, DEFAULT_SEPARATOR);
 
-	free_min(key, STRING);
+	free_string(key);
 
 	return out;
 }

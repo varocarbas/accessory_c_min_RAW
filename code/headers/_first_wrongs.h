@@ -11,6 +11,7 @@ void* WRONG_POINTER;
 type WRONG_TYPE;
 type_error WRONG_ERROR;
 type_warning WRONG_WARNING;
+action WRONG_ACTION;
 boolean WRONG_BOOLEAN;
 char WRONG_CHAR;
 int WRONG_INT;

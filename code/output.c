@@ -8,7 +8,7 @@ output* __get_new_output(void* value_, const size_t size_, const type type_)
 
 	if ((is_array == FALSE && void_type_is_ok(value_, type_) == FALSE) || (is_array == TRUE && output_array_value_is_ok(&temp) == FALSE)) temp._value = update_void_value(temp._value, value_, type_);
 
-	output* out = __assign_void(&temp, OUTPUT);
+	output* out = __initialise_custom(&temp, OUTPUT);
 
 	if (void_type_is_ok(out, OUTPUT) == TRUE && (value_ == WRONG_POINTER || type_ == WRONG_TYPE)) out = __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, WRONG_POINTER);
 
@@ -52,7 +52,7 @@ boolean output_array_value_is_ok(output* in_) { return ((output_value_is_array(i
 
 boolean output_value_is_array(output* in_) { return ((output_is_ok(in_) == TRUE && output_value_is_array_size(in_->_size)) ? TRUE : FALSE); }
 
-boolean output_value_is_array_size(size_t size_) { return is_array(size_); }
+boolean output_value_is_array_size(const size_t size_) { return is_array(size_); }
 
 type get_output_type_value(output* in_, const boolean free_in_)
 {
@@ -185,7 +185,7 @@ char* __output_to_string(output* in_)
 
 			out = __concatenate_strings(items, 3);
 
-			free_min(temp, STRING);
+			free_string(temp);
 		}
 		else out = __assign_string(error_warning_to_string(in_->_error_warning));
 	}
@@ -215,14 +215,14 @@ char* __output_value_to_string_full(output* in_)
 	char* type = type_to_string(in_->_type);
 	if (is_array == TRUE) type = __concatenate_two_strings(type, " array");
 
-	char* items[] = { value, DEFAULT_ENCLOSURE_INTERNAL_START, type, DEFAULT_ENCLOSURE_INTERNAL_END };
-	out = __concatenate_strings(items, 4);
+	char* items[] = { value, " ", DEFAULT_ENCLOSURE_INTERNAL_START, type, DEFAULT_ENCLOSURE_INTERNAL_END };
+	out = __concatenate_strings(items, 5);
 
 	if (is_array == TRUE || void_to_string_is_heap(in_->_type) == TRUE)
 	{
-		free_min(value, STRING);
+		free_string(value);
 
-		if (is_array == TRUE) free_min(type, STRING);
+		if (is_array == TRUE) free_string(type);
 	}
 
 	return out;
@@ -247,21 +247,41 @@ output* __update_output_error_warning_conversion(output* out_, void* from_, cons
 {
 	char* temp = _void_to_string(from_, type_from_);
 
-	char* items[] = { type_to_string(type_from_), DEFAULT_ENCLOSURE_INTERNAL_START, temp, DEFAULT_ENCLOSURE_INTERNAL_END, " can't be converted into ", type_to_string(type_to_) };
+	char* items[] = { type_to_string(type_from_), " ", DEFAULT_ENCLOSURE_INTERNAL_START, temp, DEFAULT_ENCLOSURE_INTERNAL_END, " can't be converted into ", type_to_string(type_to_) };
 
-	char* temp2 = __concatenate_strings(items, 6);
+	char* temp2 = __concatenate_strings(items, 7);
 
 	out_ = _update_output_error_warning_internal(out_, ERROR_WRONG_CONVERSION, WRONG_WARNING, TRUE, temp2);
 
-	if (void_to_string_is_heap(type_from_)) free_min(temp, STRING);
-	free_min(temp2, STRING);
+	if (void_to_string_is_heap(type_from_) == TRUE) free_string(temp);
+
+	free_string(temp2);
 
 	return out_;
+}
+
+output* __initialise_output_internal(output instance_)
+{
+	output* out = __initialise_void(OUTPUT);
+
+	*out = instance_;
+
+	return out;
 }
 
 void free_output_value_internal(output* in_) { free_(in_->_value, in_->_size, in_->_type); }
 
 void free_output_error_warning_internal(output* in_) { free_error_warning(in_->_error_warning); }
+
+output* __assign_free_output_item_internal(output* out_, output* in_)
+{
+	if (output_is_ok(out_) == TRUE && output_is_ok(in_) == TRUE)
+	{
+		out_->_value = (output_value_is_array(in_) == FALSE ? __assign_void(in_->_value, in_->_type) : __assign_array(in_->_value, in_->_size, in_->_type));
+	}
+
+	return out_;
+}
 
 char* __output_array_value_to_string_internal(output* in_)
 {

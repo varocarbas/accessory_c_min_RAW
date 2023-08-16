@@ -11,7 +11,14 @@ void print_new_line() { print_internal("\n", get_type_format(STRING), STRING, FA
 
 void print_internal(void* value_, char* format_, const type type_, const boolean add_new_line_)
 {
-	if (type_is_custom(type_) == TRUE) printf(format_, _custom_void_to_string(value_, type_));
+	if (type_is_custom(type_) == TRUE)
+	{
+		char* temp = _custom_void_to_string(value_, type_);
+
+		printf(format_, temp);
+
+		if (custom_void_to_string_is_heap(type_) == TRUE) free_string(temp);
+	}
 	else if (type_ == STRING) printf(format_, void_to_string(value_));
 	else if (type_ == CHAR) printf(format_, void_to_char(value_));
 	else if (type_ == INT) printf(format_, void_to_int(value_));
