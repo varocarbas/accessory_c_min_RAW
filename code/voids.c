@@ -1,15 +1,5 @@
 #include "headers/voids.h"
 
-void* assign_void(void* out_, void* in_, const type type_)
-{
-	void* out;
-
-	if (type_ == STRING) out = assign_string(out_, in_);
-	else out = (void_type_is_ok(in_, type_) == TRUE ? assign(out_, in_, WRONG_SIZE, type_) : get_wrong_void_stack(type_));
-
-	return out;
-}
-
 void* __initialise_void(const type type_) { return (type_ == STRING ? __get_wrong_string_heap() : __initialise(1, type_, FALSE)); }
 
 void* __assign_void(void* in_, const type type_)
@@ -133,13 +123,13 @@ type_error void_to_error(void* in_) { return (void_is_ok(in_) == TRUE ? *((type_
 
 type_warning void_to_warning(void* in_) { return (void_is_ok(in_) == TRUE ? *((type_warning*)in_) : WRONG_WARNING); }
 
-error_warning* void_to_error_warning(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_ERROR_WARNING); }
+error_warning* void_to_error_warning(void* in_) { return in_; }
 
-output* void_to_output(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_OUTPUT); }
+output* void_to_output(void* in_) { return in_; }
 
 boolean void_to_boolean(void* in_) { return (void_is_ok(in_) == TRUE ? *((boolean*)in_) : WRONG_BOOLEAN); }
 
-char* void_to_string(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_STRING); }
+char* void_to_string(void* in_) { return in_; }
 
 char void_to_char(void* in_) { return (void_is_ok(in_) == TRUE ? *((char*)in_) : WRONG_CHAR); }
 
@@ -153,41 +143,43 @@ long void_to_long(void* in_) { return (void_is_ok(in_) == TRUE ? *((long*)in_) :
 
 double void_to_double(void* in_) { return (void_is_ok(in_) == TRUE ? *((double*)in_) : WRONG_DOUBLE); }
 
-type* void_to_type_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+type* void_to_type_array(void* in_) { return in_; }
 
-type_error* void_to_error_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+type_error* void_to_error_array(void* in_) { return in_; }
 
-type_warning* void_to_warning_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+type_warning* void_to_warning_array(void* in_) { return in_; }
 
-error_warning** void_to_error_warning_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+error_warning** void_to_error_warning_array(void* in_) { return in_; }
 
-output** void_to_output_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+output** void_to_output_array(void* in_) { return in_; }
 
-boolean* void_to_boolean_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+boolean* void_to_boolean_array(void* in_) { return in_; }
 
-char** void_to_string_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+char** void_to_string_array(void* in_) { return in_; }
 
-char* void_to_char_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+char* void_to_char_array(void* in_) { return in_; }
 
-int* void_to_int_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+int* void_to_int_array(void* in_) { return in_; }
 
-size_t* void_to_size_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+size_t* void_to_size_array(void* in_) { return in_; }
 
-short* void_to_short_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+short* void_to_short_array(void* in_) { return in_; }
 
-long* void_to_long_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+long* void_to_long_array(void* in_) { return in_; }
 
-double* void_to_double_array(void* in_) { return (void_is_ok(in_) == TRUE ? in_ : WRONG_POINTER); }
+double* void_to_double_array(void* in_) { return in_; }
 
-void* update_void_value(void* out_, void* value_, const type type_)
+void* _update_void(void* out_, void* value_, const type type_)
 {
+	if (void_is_ok(out_) == FALSE) return out_;
+
 	if (type_ == TYPE) *((type*)out_) = void_to_type(value_);
 	else if (type_ == ERROR) *((type_error*)out_) = void_to_error(value_);
 	else if (type_ == WARNING) *((type_warning*)out_) = void_to_warning(value_);
-	else if (type_ == ERROR_WARNING) *((error_warning*)out_) = *void_to_error_warning(value_);
-	else if (type_ == OUTPUT) *((output*)out_) = *void_to_output(value_);
+	else if (type_ == ERROR_WARNING) out_ = __update_error_warning(void_to_error_warning(out_), void_to_error_warning(value_));
+	else if (type_ == OUTPUT) out_ = __update_output(void_to_output(out_), void_to_output(value_));
 	else if (type_ == BOOLEAN) *((boolean*)out_) = void_to_boolean(value_);
-	else if (type_ == STRING) *((char*)out_) = *void_to_string(value_);
+	else if (type_ == STRING) out_ = __update_string(void_to_string(out_), void_to_string(value_), FALSE);
 	else if (type_ == CHAR) *((char*)out_) = void_to_char(value_);
 	else if (type_ == INT) *((int*)out_) = void_to_int(value_);
 	else if (type_ == SIZE) *((size_t*)out_) = void_to_size(value_);
@@ -197,6 +189,8 @@ void* update_void_value(void* out_, void* value_, const type type_)
 
 	return out_;
 }
+
+boolean update_void_is_heap(const type type_) { return ((type_ == STRING || type_is_struct(type_) == TRUE) ? TRUE : FALSE); }
 
 void* __type_to_void(const type in_)
 {
@@ -399,28 +393,28 @@ void* pointer_to_void(void* in_, const type type_)
 	return out;
 }
 
-void* type_pointer_to_void(type* in_) { return (void_type_is_ok(in_, TYPE) == TRUE ? in_ : WRONG_POINTER); }
+void* type_pointer_to_void(type* in_) { return in_; }
 
-void* error_pointer_to_void(type_error* in_) { return (void_type_is_ok(in_, ERROR) == TRUE ? in_ : WRONG_POINTER); }
+void* error_pointer_to_void(type_error* in_) { return in_; }
 
-void* warning_pointer_to_void(type_warning* in_) { return (void_type_is_ok(in_, WARNING) == TRUE ? in_ : WRONG_POINTER); }
+void* warning_pointer_to_void(type_warning* in_) { return in_; }
 
-void* error_warning_pointer_to_void(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? in_ : WRONG_POINTER); }
+void* error_warning_pointer_to_void(error_warning* in_) { return in_; }
 
-void* output_pointer_to_void(output* in_) { return (void_type_is_ok(in_, OUTPUT) == TRUE ? in_ : WRONG_POINTER); }
+void* output_pointer_to_void(output* in_) { return in_; }
 
-void* boolean_pointer_to_void(boolean* in_) { return (void_type_is_ok(in_, BOOLEAN) == TRUE ? in_ : WRONG_POINTER); }
+void* boolean_pointer_to_void(boolean* in_) { return in_; }
 
-void* string_pointer_to_void(char* in_) { return (void_type_is_ok(in_, STRING) == TRUE ? in_ : WRONG_POINTER); }
+void* string_pointer_to_void(char* in_) { return in_; }
 
-void* char_pointer_to_void(char* in_) { return (void_type_is_ok(in_, CHAR) == TRUE ? in_ : WRONG_POINTER); }
+void* char_pointer_to_void(char* in_) { return in_; }
 
-void* int_pointer_to_void(int* in_) { return (void_type_is_ok(in_, INT) == TRUE ? in_ : WRONG_POINTER); }
+void* int_pointer_to_void(int* in_) { return in_; }
 
-void* size_pointer_to_void(size_t* in_) { return (void_type_is_ok(in_, SIZE) == TRUE ? in_ : WRONG_POINTER); }
+void* size_pointer_to_void(size_t* in_) { return in_; }
 
-void* short_pointer_to_void(short* in_) { return (void_type_is_ok(in_, SHORT) == TRUE ? in_ : WRONG_POINTER); }
+void* short_pointer_to_void(short* in_) { return in_; }
 
-void* long_pointer_to_void(long* in_) { return (void_type_is_ok(in_, LONG) == TRUE ? in_ : WRONG_POINTER); }
+void* long_pointer_to_void(long* in_) { return in_; }
 
-void* double_pointer_to_void(double* in_) { return (void_type_is_ok(in_, DOUBLE) == TRUE ? in_ : WRONG_POINTER); }
+void* double_pointer_to_void(double* in_) { return in_; }

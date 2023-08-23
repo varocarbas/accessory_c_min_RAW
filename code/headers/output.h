@@ -11,11 +11,15 @@ output* __get_new_output_array(void*, size_t, type, boolean);
 
 output* __get_new_output_array_min(size_t);
 
+output* __get_wrong_output();
+
 output* __get_wrong_output_error(type, type_error, void*);
 
 output* __get_wrong_output_warning(type, type_warning, void*);
 
 void free_output(output*);
+
+output* __update_output(output*, output*);
 
 boolean output_is_ok(output*);
 
@@ -76,6 +80,8 @@ void free_output_value_internal(output*);
 void free_output_error_warning_internal(output*);
 
 output* __assign_free_output_item_internal(output*, output*);
+
+output* __update_output_internal(output*, output*);
 
 char* __output_array_value_to_string_internal(output*);
 

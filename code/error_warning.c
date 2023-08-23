@@ -4,12 +4,16 @@ error_warning* __get_new_error_warning_error(const type_error error_, void* furt
 
 error_warning* __get_new_error_warning_warning(const type_warning warning_, void* further_) { return __get_new_error_warning_internal(WRONG_ERROR, warning_, FALSE, further_); }
 
+error_warning* __get_wrong_error_warning() { return __get_new_error_warning_internal(WRONG_ERROR, WRONG_WARNING, FALSE, WRONG_POINTER); }
+
 void free_error_warning(error_warning* in_h_)
 {
 	if (error_warning_is_ok(in_h_) == TRUE) free_string(in_h_->_message);
 
 	free(in_h_);
 }
+
+error_warning* __update_error_warning(error_warning* out_, error_warning* value_) { return __update_error_warning_internal(out_, value_); }
 
 boolean error_warning_is_ok(error_warning* in_) { return void_type_is_ok(in_, ERROR_WARNING); }
 
@@ -31,7 +35,9 @@ error_warning* __initialise_error_warning_internal(error_warning instance_)
 	return out;
 }
 
-error_warning* __assign_free_error_warning_item_internal(error_warning* out_, error_warning* in_)
+error_warning* __assign_free_error_warning_item_internal(error_warning* out_, error_warning* in_) { return __update_error_warning_internal(out_, in_); }
+
+error_warning* __update_error_warning_internal(error_warning* out_, error_warning* in_)
 {
 	if (error_warning_is_ok(out_) == TRUE && error_warning_is_ok(in_) == TRUE) out_->_message = __assign_string(in_->_message);
 

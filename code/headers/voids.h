@@ -3,8 +3,6 @@
 
 #include "all.h"
 
-void* assign_void(void*, void*, type);
-
 void* __initialise_void(type);
 
 void* __assign_void(void*, type);
@@ -99,7 +97,9 @@ long* void_to_long_array(void*);
 
 double* void_to_double_array(void*);
 
-void* update_void_value(void*, void*, type);
+void* _update_void(void*, void*, type);
+
+boolean update_void_is_heap(type);
 
 void* __type_to_void(type);
 

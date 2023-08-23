@@ -3,8 +3,6 @@
 
 #include "all.h"
 
-char* assign_string(char*, char*);
-
 char* __initialise_string(size_t);
 
 char** __initialise_string_array(size_t);
@@ -30,6 +28,10 @@ char* __get_wrong_string_heap();
 char* __get_wrong_string_free(char*);
 
 char* __get_wrong_string_free_both(char*, char*);
+
+char* __update_string(char*, char*, boolean);
+
+char** __update_string_array(char**, char*, size_t);
 
 size_t get_string_length(char*);
 
@@ -76,10 +78,6 @@ char* __short_to_string(short);
 char* __long_to_string(long);
 
 char* __double_to_string(double);
-
-char** __add_to_string_array(char**, char*, size_t);
-
-char** update_string_array(char**, char*, size_t);
 
 size_t get_string_length_internal(char*, boolean);
 

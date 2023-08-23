@@ -7,7 +7,11 @@ error_warning* __get_new_error_warning_error(type_error, void*);
 
 error_warning* __get_new_error_warning_warning(type_warning, void*);
 
+error_warning* __get_wrong_error_warning();
+
 void free_error_warning(error_warning*);
+
+error_warning* __update_error_warning(error_warning*, error_warning*);
 
 boolean error_warning_is_ok(error_warning*);
 
@@ -18,6 +22,8 @@ error_warning* __get_new_error_warning_internal(type_error, type_warning, boolea
 error_warning* __initialise_error_warning_internal(error_warning);
 
 error_warning* __assign_free_error_warning_item_internal(error_warning*, error_warning*);
+
+error_warning* __update_error_warning_internal(error_warning*, error_warning*);
 
 char* __get_error_warning_message_internal(type_error, type_warning, boolean, void*);
 

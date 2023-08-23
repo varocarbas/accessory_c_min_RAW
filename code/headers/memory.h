@@ -3,10 +3,6 @@
 
 #include "all.h"
 
-boolean pointer_is_ok(void*);
-
-void* assign(void*, void*, size_t, type);
-
 void* __initialise(size_t, type, boolean);
 
 void* __initialise_custom(void*, type);
@@ -21,19 +17,21 @@ void* __assign_free_both(void*, void*, size_t, type, boolean);
 
 void free_(void*, size_t, type);
 
-size_t get_memory_size(size_t, type, boolean, boolean);
-
 void* get_wrong(type, boolean);
 
 void* _get_wrong(type, boolean, boolean);
 
 void* __get_wrong_heap(type, boolean);
 
-void* get_wrong_stack(type, boolean);
-
 void* __get_wrong_free(void*, size_t, type);
 
 void* __get_wrong_free_both(void*, void*, size_t, type);
+
+void* get_wrong_stack(type, boolean);
+
+boolean pointer_is_ok(void*);
+
+size_t get_memory_size(size_t, type, boolean, boolean);
 
 void free_internal(void*, type, boolean);
 

@@ -1,9 +1,5 @@
 #include "headers/memory.h"
 
-boolean pointer_is_ok(void* in_) { return ((in_ != WRONG_POINTER) ? TRUE : FALSE); }
-
-void* assign(void* out_, void* in_, const size_t array_size_, const type type_) { return _assign_internal(out_, in_, array_size_, type_, (array_size_ > WRONG_SIZE)); }
-
 void* __initialise(const size_t tot_items_, const type type_, const boolean is_array_) { return ((type_ != WRONG_TYPE && (tot_items_ > WRONG_SIZE || type_ == STRING)) ? __initialise_internal(get_memory_size(tot_items_, type_, is_array_, TRUE)) : __get_wrong_heap(type_, is_array_)); }
 
 void* __initialise_custom(void* in_, const type type_)
@@ -46,18 +42,6 @@ void free_(void* in_h_, const size_t size_array_, const type type_)
 	else free_internal(in_h_, type_, FALSE);
 }
 
-size_t get_memory_size(const size_t tot_items_, const type type_, const boolean is_2d_array_, const boolean is_heap_)
-{
-    if (type_ == WRONG_TYPE || (tot_items_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_array_) : WRONG_SIZE);
-
-    size_t out = tot_items_;
-    if (type_ == STRING && is_2d_array_ == FALSE) out++;
-
-    if (is_heap_) out *= get_type_size(type_, is_2d_array_);
-
-    return out;
-}
-
 void* get_wrong(const type type_, const boolean is_array_) { return get_wrong_stack(type_, is_array_); }
 
 void* _get_wrong(const type type_, const boolean is_array_, const boolean is_heap_) { return (is_heap_ ? __get_wrong_heap(type_, is_array_) : get_wrong_stack(type_, is_array_)); }
@@ -68,7 +52,10 @@ void* __get_wrong_heap(const type type_, const boolean is_array_)
 
 	size_t size = 0;
 
-	if (type_ == STRING)
+	if (type_ == WRONG_TYPE) out = __initialise_internal(get_type_size(WRONG_SIZE, FALSE));
+	else if (type_ == ERROR_WARNING) out = __get_wrong_error_warning();
+	else if (type_ == OUTPUT) out = __get_wrong_output();
+	else if (type_ == STRING)
 	{
 		out = __initialise(size, type_, is_array_);
 
@@ -82,6 +69,21 @@ void* __get_wrong_heap(const type type_, const boolean is_array_)
 	}
 
 	return out;
+}
+
+void* __get_wrong_free(void* in_out_h_, const size_t array_size_, const type type_)
+{
+	free_(in_out_h_, array_size_, type_);
+
+	return __get_wrong_heap(type_, FALSE);
+}
+
+void* __get_wrong_free_both(void* out_h_, void* in_h_, const size_t array_size_, const type type_)
+{
+	free_(out_h_, array_size_, type_);
+	free_(in_h_, array_size_, type_);
+
+	return __get_wrong_heap(type_, FALSE);
 }
 
 void* get_wrong_stack(const type type_, const boolean is_array_)
@@ -107,19 +109,18 @@ void* get_wrong_stack(const type type_, const boolean is_array_)
 	return out;
 }
 
-void* __get_wrong_free(void* in_out_h_, const size_t array_size_, const type type_)
+boolean pointer_is_ok(void* in_) { return ((in_ != WRONG_POINTER) ? TRUE : FALSE); }
+
+size_t get_memory_size(const size_t tot_items_, const type type_, const boolean is_2d_array_, const boolean is_heap_)
 {
-	free_(in_out_h_, array_size_, type_);
+    if (type_ == WRONG_TYPE || (tot_items_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_array_) : WRONG_SIZE);
 
-	return __get_wrong_heap(type_, FALSE);
-}
+    size_t out = tot_items_;
+    if (type_ == STRING && is_2d_array_ == FALSE) out++;
 
-void* __get_wrong_free_both(void* out_h_, void* in_h_, const size_t array_size_, const type type_)
-{
-	free_(out_h_, array_size_, type_);
-	free_(in_h_, array_size_, type_);
+    if (is_heap_) out *= get_type_size(type_, is_2d_array_);
 
-	return __get_wrong_heap(type_, FALSE);
+    return out;
 }
 
 void free_internal(void* in_h_, const type type_, const boolean only_native_)
@@ -156,8 +157,8 @@ void* __assign_free_custom_internal(void* out_, void* in_, const size_t tot_item
 
 	for (size_t i = 0; i < tot_items_; i++)
 	{
-		void* out = __assign_void(get_2d_array_item(out_, i, type_), type_);
-		void* in = __assign_void(get_2d_array_item(in_, i, type_), type_);
+		void* out = __assign_void(get_2d_array_value(out_, i, type_), type_);
+		void* in = __assign_void(get_2d_array_value(in_, i, type_), type_);
 
 		if (type_ == ERROR_WARNING) ((error_warning**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);
 		else if (type_ == OUTPUT) ((output**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);

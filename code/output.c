@@ -6,8 +6,6 @@ output* __get_new_output(void* value_, const size_t size_, const type type_)
 
 	output temp = { (is_array == FALSE ? __assign_void(value_, type_) : __assign_array(value_, size_, type_)), size_, type_, TRUE, WRONG_ERROR_WARNING };
 
-	if ((is_array == FALSE && void_type_is_ok(value_, type_) == FALSE) || (is_array == TRUE && output_array_value_is_ok(&temp) == FALSE)) temp._value = update_void_value(temp._value, value_, type_);
-
 	output* out = __initialise_custom(&temp, OUTPUT);
 
 	if (void_type_is_ok(out, OUTPUT) == TRUE && (value_ == WRONG_POINTER || type_ == WRONG_TYPE)) out = __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, WRONG_POINTER);
@@ -28,6 +26,8 @@ output* __get_new_output_array(void* value_, const size_t size_, const type type
 
 output* __get_new_output_array_min(const size_t size_) { return __get_new_output(get_wrong_array_stack(), size_, WRONG_TYPE); }
 
+output* __get_wrong_output() { return __get_wrong_output_error(WRONG_TYPE, WRONG_ERROR, WRONG_POINTER); }
+
 output* __get_wrong_output_error(const type type_, const type_error error_, void* further_) { return __get_wrong_output_internal(type_, error_, WRONG_WARNING, TRUE, further_); }
 
 output* __get_wrong_output_warning(const type type_, const type_warning warning_, void* further_) { return __get_wrong_output_internal(type_, WRONG_ERROR, warning_, FALSE, further_); }
@@ -43,6 +43,8 @@ void free_output(output* in_h_)
 
 	free(in_h_);
 }
+
+output* __update_output(output* out_, output* value_) { return __update_output_internal(out_, value_); }
 
 boolean output_is_ok(output* in_) { return void_type_is_ok(in_, OUTPUT); }
 
@@ -273,7 +275,9 @@ void free_output_value_internal(output* in_) { free_(in_->_value, in_->_size, in
 
 void free_output_error_warning_internal(output* in_) { free_error_warning(in_->_error_warning); }
 
-output* __assign_free_output_item_internal(output* out_, output* in_)
+output* __assign_free_output_item_internal(output* out_, output* in_) { return __update_output_internal(out_, in_); }
+
+output* __update_output_internal(output* out_, output* in_)
 {
 	if (output_is_ok(out_) == TRUE && output_is_ok(in_) == TRUE)
 	{
@@ -317,8 +321,7 @@ output* _update_output_error_warning_internal(output* out_, const type_error err
 
 	out_->_is_ok = is_ok;
 
-	if (is_ok == TRUE) out_->_error_warning = assign(out_->_error_warning, WRONG_ERROR_WARNING, 1, ERROR_WARNING);
-	else out_->_error_warning = __get_new_error_warning_internal(error_, warning_, is_error_, further_);
+	if (is_ok == FALSE) out_->_error_warning = __get_new_error_warning_internal(error_, warning_, is_error_, further_);
 
 	return out_;
 }

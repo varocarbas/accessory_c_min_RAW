@@ -1,7 +1,5 @@
 #include "headers/strings.h"
 
-char* assign_string(char* out_, char* in_) { return (string_is_ok(in_) == TRUE ? assign(out_, in_, WRONG_SIZE, STRING) : get_wrong_string_stack()); }
-
 char* __initialise_string(const size_t length_) { return __initialise(length_, STRING, FALSE); }
 
 char** __initialise_string_array(const size_t size_) { return __initialise_array(size_, STRING); }
@@ -47,6 +45,17 @@ char* __get_wrong_string_heap() { return __get_wrong_heap(STRING, FALSE); }
 char* __get_wrong_string_free(char* in_out_h_) { return __get_wrong_free(in_out_h_, 0, STRING); }
 
 char* __get_wrong_string_free_both(char* out_h_, char* in_h_) { return __get_wrong_free_both(out_h_, in_h_, 0, STRING); }
+
+char* __update_string(char* out_, char* value_, const boolean free_out_)
+{
+	if (free_out_ == TRUE) free_string(out_);
+
+	out_ = __assign_string(value_);
+
+	return out_;
+}
+
+char** __update_string_array(char** array_, char* value_, const size_t i_) { return __update_2d_array(array_, value_, i_, STRING); }
 
 size_t get_string_length(char* in_) { return get_string_length_internal(in_, DEFAULT_STRINGS_LENGTH_TRIM); }
 
@@ -110,7 +119,7 @@ output* __index_of_string(char* needle_, char* haystack_, const size_t start_i_)
 {
 	output* out = __get_new_output_type(SIZE);
 
-	boolean is_ok = (string_is_ok(needle_) == TRUE && string_is_ok(haystack_) == TRUE);
+	boolean is_ok = (string_is_ok_internal(needle_, FALSE) == TRUE && string_is_ok_internal(haystack_, FALSE) == TRUE);
 
 	boolean is_error = (is_ok == TRUE ? FALSE : TRUE);
 
@@ -129,7 +138,7 @@ output* __index_of_string(char* needle_, char* haystack_, const size_t start_i_)
 		free_output(temp);
 	}
 
-	if (is_ok == FALSE) out = (is_error == TRUE ? __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, "__index_of_string") : update_output_error_warning_warning(out, WARNING_NOT_FOUND, "__index_of_string"));
+	if (is_ok == FALSE) out = (is_error == TRUE ? __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, string_pointer_to_void("__index_of_string")) : update_output_error_warning_warning(out, WARNING_NOT_FOUND, string_pointer_to_void("__index_of_string")));
 
 	return out;
 }
@@ -143,7 +152,7 @@ output* __split_string(char* needle_, char* haystack_)
 	size_t length_needle = get_string_length_internal(needle_, FALSE);
 	size_t length_haystack = get_string_length_internal(haystack_, FALSE);
 
-	return ((length_haystack > WRONG_SIZE && length_needle > WRONG_SIZE && length_needle < length_haystack) ? __split_string_internal(needle_, length_needle, haystack_, length_haystack, DEFAULT_STRINGS_SPLIT_NORMALISE) : __get_wrong_output_error(STRING, ERROR_WRONG_INPUTS, "__split_string"));
+	return ((length_haystack > WRONG_SIZE && length_needle > WRONG_SIZE && length_needle < length_haystack) ? __split_string_internal(needle_, length_needle, haystack_, length_haystack, DEFAULT_STRINGS_SPLIT_NORMALISE) : __get_wrong_output_error(STRING, ERROR_WRONG_INPUTS, string_pointer_to_void("__split_string")));
 }
 
 void print_string(char* in_) { print((string_is_ok(in_) == TRUE ? in_ : WRONG_STRING), STRING); }
@@ -247,10 +256,6 @@ char* __double_to_string(const double in_)
 
 	return out;
 }
-
-char** __add_to_string_array(char** array_, char* item_, const size_t i_) { return __add_to_2d_array(array_, item_, i_, STRING); }
-
-char** update_string_array(char** array_, char* value_, const size_t i_) { return update_2d_array(array_, value_, i_, STRING); }
 
 size_t get_string_length_internal(char* in_, const boolean trim_)
 {
@@ -588,11 +593,11 @@ output* __split_string_internal(char* needle_, const size_t length_needle_, char
 		{
 			char* temp2 = __substring(haystack_, i, length);
 
-			items = __add_to_string_array(items, string_pointer_to_void(temp2), i2);
+			items = __update_string_array(items, string_pointer_to_void(temp2), i2);
 
 			free_string(temp2);
 		}
-		else items = __add_to_string_array(items, string_pointer_to_void(WRONG_STRING), i2);
+		else items = __update_string_array(items, string_pointer_to_void(WRONG_STRING), i2);
 
 		i = is[i0] + length_needle_;
 		i2++;
@@ -607,13 +612,13 @@ output* __split_string_internal(char* needle_, const size_t length_needle_, char
 	{
 		char* temp2 = __substring(haystack_, i, length);
 
-		items = __add_to_string_array(items, string_pointer_to_void(temp2), i2);
+		items = __update_string_array(items, string_pointer_to_void(temp2), i2);
 
 		free_string(temp2);
 	}
-	else items = __add_to_string_array(items, string_pointer_to_void(WRONG_STRING), i2);
+	else items = __update_string_array(items, string_pointer_to_void(WRONG_STRING), i2);
 
-	if (tot < tot0) items = __reduce_array_size(items, tot, type0, TRUE);
+	if (tot < tot0) items = __shrink_array_internal(items, tot, type0, WRONG_POINTER, TRUE, tot0);
 
 	free_output(temp);
 
@@ -622,20 +627,23 @@ output* __split_string_internal(char* needle_, const size_t length_needle_, char
 
 void* __split_matches_string_internal(char* needle_, char* haystack_, const boolean normalise_, const boolean is_split_)
 {
-	size_t length_needle = get_string_length(needle_);
+	size_t length_needle = get_string_length_internal(needle_, FALSE);
 
 	type type0 = SIZE;
-
-	size_t* is = WRONG_POINTER;
-	if (is_split_ == TRUE)
-	{
-		size_t tot0 = (int)((double)get_string_length(haystack_) / length_needle);
-
-		is = __initialise_array(tot0, type0);
-	}
+	size_t tot0 = WRONG_SIZE;
 
 	size_t tot = 0;
 	size_t i = 0;
+
+	size_t* is = WRONG_POINTER;
+
+	if (is_split_ == TRUE)
+	{
+		tot0 = (size_t)((double)get_string_length_internal(haystack_, FALSE) / length_needle);
+		if (tot0 == 0) return __get_wrong_output();
+
+		is = __initialise_array(tot0, type0);
+	}
 
 	while (TRUE)
 	{
@@ -643,7 +651,7 @@ void* __split_matches_string_internal(char* needle_, char* haystack_, const bool
 
 		if (temp->_is_ok)
 		{
-			if (is_split_ == TRUE) is = add_to_1d_array(is, temp->_value, tot, SIZE);
+			if (is_split_ == TRUE) is = update_1d_array(is, temp->_value, tot, SIZE);
 
 			i = get_output_size_value(temp, TRUE) + 1;
 
@@ -664,7 +672,7 @@ void* __split_matches_string_internal(char* needle_, char* haystack_, const bool
 		if (tot == 0) out = __get_new_output_array_min(tot);
 		else
 		{
-			void* temp2 = __reduce_array_size(is, tot, type0, TRUE);
+			void* temp2 = __shrink_array_internal(is, tot, type0, WRONG_POINTER, TRUE, tot0);
 
 			output* temp3 = __get_new_output(temp2, tot, type0);
 
