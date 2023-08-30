@@ -31,17 +31,19 @@ boolean void_is_ok(void*);
 
 boolean void_type_is_ok(void*, type);
 
-char* _void_to_string(void*, type);
+boolean voids_are_equal(void*, void*, type);
 
-char* _custom_void_to_string(void*, type);
+char* _void_type_to_string(void*, type);
 
-char* __native_void_to_string(void*, type);
+char* _custom_void_type_to_string(void*, type);
 
-boolean void_to_string_is_heap(type);
+char* __native_void_type_to_string(void*, type);
 
-boolean custom_void_to_string_is_heap(type);
+boolean void_type_to_string_is_heap(type);
 
-boolean native_void_to_string_is_heap(type);
+boolean custom_void_type_to_string_is_heap(type);
+
+boolean native_void_type_to_string_is_heap(type);
 
 char* __concatenate_two_voids(void*, type, void*, type);
 

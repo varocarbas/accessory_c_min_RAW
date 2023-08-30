@@ -31,6 +31,8 @@ boolean output_value_is_array(output*);
 
 boolean output_value_is_array_size(size_t);
 
+boolean outputs_are_equal(output*, output*);
+
 type get_output_type_value(output*, boolean);
 
 type_error get_output_error_value(output*, boolean);
@@ -79,9 +81,11 @@ void free_output_value_internal(output*);
 
 void free_output_error_warning_internal(output*);
 
-output* __assign_free_output_item_internal(output*, output*);
+output* __assign_output_internal(output*, output*);
 
-output* __update_output_internal(output*, output*);
+boolean output_is_ok_internal(output*, boolean);
+
+boolean output_values_are_equal_internal(output*, output*);
 
 char* __output_array_value_to_string_internal(output*);
 

@@ -8,16 +8,49 @@ error_warning* __get_wrong_error_warning() { return __get_new_error_warning_inte
 
 void free_error_warning(error_warning* in_h_)
 {
-	if (error_warning_is_ok(in_h_) == TRUE) free_string(in_h_->_message);
+	if (error_warning_is_ok_internal(in_h_, FALSE) == TRUE) free_string(in_h_->_message);
 
 	free(in_h_);
 }
 
-error_warning* __update_error_warning(error_warning* out_, error_warning* value_) { return __update_error_warning_internal(out_, value_); }
+error_warning* __update_error_warning(error_warning* out_, error_warning* value_)
+{
+	if (error_warning_is_ok_internal(out_, FALSE) == TRUE && error_warning_is_ok_internal(value_, FALSE) == TRUE)
+	{
+		*out_ = *value_;
 
-boolean error_warning_is_ok(error_warning* in_) { return void_type_is_ok(in_, ERROR_WARNING); }
+		out_ = __assign_error_warning_internal(out_, value_);
+	}
 
-char* error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? in_->_message : __get_wrong_string_heap()); }
+	return out_;
+}
+
+boolean error_warning_is_ok(error_warning* in_) { return error_warning_is_ok_internal(in_, DEFAULT_ERROR_WARNING_OK_PROPERTIES); }
+
+boolean error_warnings_are_equal(error_warning* in1_, error_warning* in2_)
+{
+	boolean out = FALSE;
+
+	boolean is_ok1 = error_warning_is_ok_internal(in1_, TRUE);
+	boolean is_ok2 = error_warning_is_ok_internal(in2_, TRUE);
+
+	if (is_ok1 == FALSE || is_ok2 == FALSE) out = (is_ok1 == is_ok2 ? TRUE : FALSE);
+	else if (in1_->_is_error == in2_->_is_error)
+	{
+		out =
+		(
+			strings_are_equal(in1_->_message, in2_->_message) &&
+			(
+				(in1_->_is_error == TRUE && in1_->_error == in2_->_error) ||
+				(in1_->_is_error == FALSE && in1_->_warning == in2_->_warning)
+			)
+		);
+	}
+
+	return out;
+}
+
+char* __error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? __assign_string(in_->_message) : __get_wrong_string_heap()); }
 
 error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)
 {
@@ -35,11 +68,9 @@ error_warning* __initialise_error_warning_internal(error_warning instance_)
 	return out;
 }
 
-error_warning* __assign_free_error_warning_item_internal(error_warning* out_, error_warning* in_) { return __update_error_warning_internal(out_, in_); }
-
-error_warning* __update_error_warning_internal(error_warning* out_, error_warning* in_)
+error_warning* __assign_error_warning_internal(error_warning* out_, error_warning* in_)
 {
-	if (error_warning_is_ok(out_) == TRUE && error_warning_is_ok(in_) == TRUE) out_->_message = __assign_string(in_->_message);
+	if (error_warning_is_ok_internal(out_, FALSE) == TRUE && error_warning_is_ok_internal(in_, FALSE) == TRUE) out_->_message = __assign_string(in_->_message);
 
 	return out_;
 }
@@ -62,6 +93,18 @@ char* __get_error_warning_message_common_internal(const type_error error_, const
 		char* items[] = { out, further };
 
 		out = __assign_free_both_string(out, __concatenate_strings_internal(items, 2, DEFAULT_SEPARATOR));
+	}
+
+	return out;
+}
+
+boolean error_warning_is_ok_internal(error_warning* in_, const boolean check_properties_)
+{
+	boolean out = void_type_is_ok(in_, ERROR_WARNING);
+
+	if (out == TRUE && check_properties_ == TRUE)
+	{
+		if ((in_->_is_error == TRUE && in_->_error == WRONG_ERROR) || (in_->_is_error == FALSE && in_->_warning == WRONG_WARNING)) out = FALSE;
 	}
 
 	return out;

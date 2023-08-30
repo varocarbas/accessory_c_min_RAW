@@ -13,11 +13,11 @@ void print_internal(void* value_, char* format_, const type type_, const boolean
 {
 	if (type_is_custom(type_) == TRUE)
 	{
-		char* temp = _custom_void_to_string(value_, type_);
+		char* temp = _custom_void_type_to_string(value_, type_);
 
 		printf(format_, temp);
 
-		if (custom_void_to_string_is_heap(type_) == TRUE) free_string(temp);
+		if (custom_void_type_to_string_is_heap(type_) == TRUE) free_string(temp);
 	}
 	else if (type_ == STRING) printf(format_, void_to_string(value_));
 	else if (type_ == CHAR) printf(format_, void_to_char(value_));

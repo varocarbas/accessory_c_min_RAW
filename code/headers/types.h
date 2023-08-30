@@ -13,9 +13,7 @@ boolean type_is_struct(type);
 
 boolean type_is_pointer(type);
 
-boolean type_array_is_1d(type);
-
-boolean type_array_is_2d(type);
+boolean type_array_is_2d_pointer(type);
 
 char* type_to_string(type);
 

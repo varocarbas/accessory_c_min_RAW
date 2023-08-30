@@ -10,9 +10,7 @@ boolean type_is_struct(const type in_) { return (in_ == ERROR_WARNING || in_ == 
 
 boolean type_is_pointer(const type in_) { return (in_ == STRING || type_is_struct(in_) == TRUE); }
 
-boolean type_array_is_1d(const type in_) { return (type_array_is_2d(in_) == TRUE ? FALSE : TRUE); }
-
-boolean type_array_is_2d(const type in_) { return type_is_pointer(in_); }
+boolean type_array_is_2d_pointer(const type in_) { return type_is_pointer(in_); }
 
 char* type_to_string(const type in_)
 {
@@ -69,17 +67,17 @@ char* get_type_format(const type in_)
 	return out;
 }
 
-size_t get_type_size(const type in_, const boolean is_2d_array_)
+size_t get_type_size(const type in_, const boolean is_2d_pointer_)
 {
 	size_t out;
 
 	if (in_ == TYPE) out = sizeof(type);
 	else if (in_ == ERROR) out = sizeof(type_error);
 	else if (in_ == WARNING) out = sizeof(type_warning);
-	else if (in_ == ERROR_WARNING) out = (is_2d_array_ ? sizeof(error_warning*) : sizeof(error_warning));
-	else if (in_ == OUTPUT) out = (is_2d_array_ ? sizeof(output*) : sizeof(output));
+	else if (in_ == ERROR_WARNING) out = (is_2d_pointer_ ? sizeof(error_warning*) : sizeof(error_warning));
+	else if (in_ == OUTPUT) out = (is_2d_pointer_ ? sizeof(output*) : sizeof(output));
 	else if (in_ == BOOLEAN) out = sizeof(boolean);
-	else if (in_ == STRING) out = (is_2d_array_ ? sizeof(char*) : sizeof(char));
+	else if (in_ == STRING) out = (is_2d_pointer_ ? sizeof(char*) : sizeof(char));
 	else if (in_ == CHAR) out = sizeof(char);
 	else if (in_ == INT) out = sizeof(int);
 	else if (in_ == SIZE) out = sizeof(size_t);

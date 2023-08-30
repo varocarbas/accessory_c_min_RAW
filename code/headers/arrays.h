@@ -19,7 +19,7 @@ void* __assign_free_both_array(void*, void*, size_t, type);
 
 void free_array(void*, size_t, type);
 
-void free_2d_array(void*, size_t, type);
+void free_2d_pointer(void*, size_t, type);
 
 void* _get_wrong_array(boolean);
 
@@ -35,11 +35,11 @@ boolean is_array(size_t);
 
 boolean array_is_ok(void*, size_t, type);
 
+boolean arrays_are_equal(void*, size_t, void*, size_t, type);
+
 void* __shrink_array(void*, size_t, type);
 
-void* get_1d_array_value(void*, size_t, type);
-
-void* get_2d_array_value(void*, size_t, type);
+void* get_array_value(void*, size_t, type);
 
 type get_type_array_value(void*, size_t);
 
@@ -67,9 +67,9 @@ long get_long_array_value(void*, size_t);
 
 double get_double_array_value(void*, size_t);
 
-void* update_1d_array(void*, void*, size_t, type);
+void* _update_array(void*, void*, size_t, type);
 
-void* __update_2d_array(void*, void*, size_t, type);
+boolean update_array_is_heap(type);
 
 void print_array(void*, size_t, type);
 
@@ -77,11 +77,11 @@ char* __array_to_string(void*, size_t, type);
 
 void* __assign_array_internal(void*, void*, size_t, type, size_t*, boolean, boolean);
 
-void* __initialise_update_2d_array_internal(void*, void*, size_t, type, size_t, action);
+void* __initialise_update_2d_pointer_array_internal(void*, void*, size_t, type, size_t, action);
 
-void* __initialise_2d_array_item_internal(void*, size_t, type, size_t);
+void* __initialise_2d_pointer_array_item_internal(void*, size_t, type, size_t);
 
-void* __update_2d_array_item_internal(void*, void*, size_t, type);
+void* __update_2d_pointer_array_item_internal(void*, void*, size_t, type);
 
 void* __get_wrong_array_internal(void*, void*, size_t, type, boolean, boolean);
 
@@ -91,9 +91,13 @@ boolean array_is_ok_internal(void*);
 
 void* __shrink_array_internal(void*, size_t, type, size_t*, boolean, size_t);
 
-void* update_1d_array_internal(void*, void*, size_t, type);
+void* get_array_value_default_internal(void*, size_t, type);
 
-void* __update_2d_array_internal(void* array_, void*, size_t, type);
+void* get_2d_pointer_array_value_internal(void*, size_t, type);
+
+void* update_array_default_internal(void*, void*, size_t, type);
+
+void* __update_2d_pointer_array_internal(void* array_, void*, size_t, type);
 
 char* _print_array_to_string_internal(void*, size_t, type, boolean);
 

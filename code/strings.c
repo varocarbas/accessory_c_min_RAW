@@ -34,7 +34,7 @@ char* __assign_free_both_string(char* out_h_, char* in_h_)
 
 void free_string(char* in_h_) { free_void(in_h_, STRING); }
 
-void free_string_array(char** in_h_, const size_t size_) { free_2d_array(in_h_, size_, STRING); }
+void free_string_array(char** in_h_, const size_t size_) { free_2d_pointer(in_h_, size_, STRING); }
 
 char* _get_wrong_string(const boolean is_heap_) { return _get_wrong(STRING, FALSE, is_heap_); }
 
@@ -55,13 +55,13 @@ char* __update_string(char* out_, char* value_, const boolean free_out_)
 	return out_;
 }
 
-char** __update_string_array(char** array_, char* value_, const size_t i_) { return __update_2d_array(array_, value_, i_, STRING); }
+char** __update_string_array(char** array_, char* value_, const size_t i_) { return _update_array(array_, value_, i_, STRING); }
 
 size_t get_string_length(char* in_) { return get_string_length_internal(in_, DEFAULT_STRINGS_LENGTH_TRIM); }
 
 boolean string_is_ok(char* in_) { return string_is_ok_internal(in_, DEFAULT_STRINGS_OK_TRIM); }
 
-boolean strings_are_equal(char* input1_, char* input2_) { return strings_are_equal_internal(input1_, input2_, DEFAULT_STRINGS_EQUAL_NORMALISE); }
+boolean strings_are_equal(char* in1_, char* in2_) { return strings_are_equal_internal(in1_, in2_, DEFAULT_STRINGS_EQUAL_NORMALISE); }
 
 char* __trim_string(char* in_)
 {
@@ -651,7 +651,7 @@ void* __split_matches_string_internal(char* needle_, char* haystack_, const bool
 
 		if (temp->_is_ok)
 		{
-			if (is_split_ == TRUE) is = update_1d_array(is, temp->_value, tot, SIZE);
+			if (is_split_ == TRUE) is = _update_array(is, temp->_value, tot, SIZE);
 
 			i = get_output_size_value(temp, TRUE) + 1;
 

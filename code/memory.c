@@ -111,14 +111,14 @@ void* get_wrong_stack(const type type_, const boolean is_array_)
 
 boolean pointer_is_ok(void* in_) { return ((in_ != WRONG_POINTER) ? TRUE : FALSE); }
 
-size_t get_memory_size(const size_t tot_items_, const type type_, const boolean is_2d_array_, const boolean is_heap_)
+size_t get_memory_size(const size_t tot_items_, const type type_, const boolean is_2d_pointer_, const boolean is_heap_)
 {
-    if (type_ == WRONG_TYPE || (tot_items_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_array_) : WRONG_SIZE);
+    if (type_ == WRONG_TYPE || (tot_items_ == WRONG_SIZE && type_ != STRING)) return (is_heap_ ? get_type_size(WRONG_SIZE, is_2d_pointer_) : WRONG_SIZE);
 
     size_t out = tot_items_;
-    if (type_ == STRING && is_2d_array_ == FALSE) out++;
+    if (type_ == STRING && is_2d_pointer_ == FALSE) out++;
 
-    if (is_heap_) out *= get_type_size(type_, is_2d_array_);
+    if (is_heap_) out *= get_type_size(type_, is_2d_pointer_);
 
     return out;
 }
@@ -157,8 +157,8 @@ void* __assign_free_custom_internal(void* out_, void* in_, const size_t tot_item
 
 	for (size_t i = 0; i < tot_items_; i++)
 	{
-		void* out = __assign_void(get_2d_array_value(out_, i, type_), type_);
-		void* in = __assign_void(get_2d_array_value(in_, i, type_), type_);
+		void* out = __assign_void(get_array_value(out_, i, type_), type_);
+		void* in = __assign_void(get_array_value(in_, i, type_), type_);
 
 		if (type_ == ERROR_WARNING) ((error_warning**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);
 		else if (type_ == OUTPUT) ((output**)out_)[i] = __assign_free_custom_item_internal(out, in, type_);
@@ -172,8 +172,8 @@ void* __assign_free_custom_internal(void* out_, void* in_, const size_t tot_item
 
 void* __assign_free_custom_item_internal(void* out_, void* in_, const type type_)
 {
-	if (type_ == ERROR_WARNING) out_ = __assign_free_error_warning_item_internal(out_, in_);
-	else if (type_ == OUTPUT) out_ = __assign_free_output_item_internal(out_, in_);
+	if (type_ == ERROR_WARNING) out_ = __assign_error_warning_internal(out_, in_);
+	else if (type_ == OUTPUT) out_ = __assign_output_internal(out_, in_);
 
 	return out_;
 }
