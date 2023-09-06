@@ -1,13 +1,13 @@
 #include "headers/voids.h"
 
-void* __initialise_void(const type type_) { return (type_ == STRING ? __get_wrong_string_heap() : __initialise(1, type_, FALSE)); }
+void* __initialise_void(const type type_) { return (type_ == STRING ? __get_wrong_string() : __initialise(1, type_, FALSE)); }
 
 void* __assign_void(void* in_, const type type_)
 {
 	void* out;
 
 	if (type_ == STRING) out = __assign_string(in_);
-	else out = (void_is_ok(in_) == TRUE ? __assign(in_, 1, type_, FALSE) : __get_wrong_void_heap(type_));
+	else out = (void_is_ok(in_) == TRUE ? __assign(in_, 1, type_, FALSE) : __get_wrong_void(type_));
 
 	return out;
 }
@@ -44,13 +44,11 @@ void* __assign_free_both_void(void* out_h_, void* in_h_, const type type_)
 
 void free_void(void* in_h_, const type type_) { free_internal(in_h_, type_, FALSE); }
 
-void* get_wrong_void(const type type_) { return get_wrong_void_stack(type_); }
-
 void* _get_wrong_void(const type type_, const boolean is_heap_) { return _get_wrong(type_, FALSE, is_heap_); }
 
-void* get_wrong_void_stack(const type type_) { return get_wrong_stack(type_, FALSE); }
+void* get_wrong_void(const type type_) { return get_wrong(type_, FALSE); }
 
-void* __get_wrong_void_heap(const type type_) {	return __get_wrong_heap(type_, FALSE); }
+void* __get_wrong_void(const type type_) {	return __get_wrong(type_, FALSE); }
 
 void* __get_wrong_void_free(void* in_out_h_, const type type_) { return (type_ == STRING ? __get_wrong_string_free(in_out_h_) : __get_wrong_free(in_out_h_, 0, type_)); }
 
@@ -137,7 +135,7 @@ char* __native_void_type_to_string(void* in_, const type type_)
 {
 	char* out;
 
-	if (void_is_ok(in_) == FALSE) out = __get_wrong_string_heap();
+	if (void_is_ok(in_) == FALSE) out = __get_wrong_string();
 	else if (type_ == STRING) out = __assign_string(void_to_string(in_));
 	else if (type_ == CHAR) out = __char_to_string(void_to_char(in_));
 	else if (type_ == INT) out = __int_to_string(void_to_int(in_));
@@ -145,7 +143,7 @@ char* __native_void_type_to_string(void* in_, const type type_)
 	else if (type_ == SHORT) out = __short_to_string(void_to_short(in_));
 	else if (type_ == LONG) out = __long_to_string(void_to_long(in_));
 	else if (type_ == DOUBLE) out = __double_to_string(void_to_double(in_));
-	else out = __get_wrong_string_heap();
+	else out = __get_wrong_string();
 
 	return out;
 }
@@ -164,7 +162,7 @@ char* __concatenate_two_voids(void* in1_, const type type1_, void* in2_, const t
 	size_t length1 = get_string_length_internal(in1, FALSE);
 	size_t length2 = get_string_length_internal(in2, FALSE);
 
-	char* out = ((length1 > WRONG_SIZE && length2 > WRONG_SIZE) ? __concatenate_two_strings_internal(in1, length1, in2, length2) : __get_wrong_string_heap());
+	char* out = ((length1 > WRONG_SIZE && length2 > WRONG_SIZE) ? __concatenate_two_strings_internal(in1, length1, in2, length2) : __get_wrong_string());
 
 	if (void_type_to_string_is_heap(type1_)) free_string(in1);
 	if (void_type_to_string_is_heap(type2_)) free_string(in2);
@@ -259,7 +257,7 @@ void* __type_to_void(const type in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type0);
+	else out = __get_wrong_void(type0);
 
 	return out;
 }
@@ -276,7 +274,7 @@ void* __error_to_void(const type_error in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -293,7 +291,7 @@ void* __warning_to_void(const type_warning in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -314,7 +312,7 @@ void* __boolean_to_void(const boolean in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -333,7 +331,7 @@ void* __char_to_void(const char in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -350,7 +348,7 @@ void* __int_to_void(const int in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -367,7 +365,7 @@ void* __size_to_void(const size_t in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -384,7 +382,7 @@ void* __short_to_void(const short in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -401,7 +399,7 @@ void* __long_to_void(const long in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }
@@ -418,7 +416,7 @@ void* __double_to_void(const double in_)
 
 		if (pointer_is_ok(out) == TRUE) *out = in_;
 	}
-	else out = __get_wrong_void_heap(type);
+	else out = __get_wrong_void(type);
 
 	return out;
 }

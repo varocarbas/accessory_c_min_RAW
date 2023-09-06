@@ -34,7 +34,7 @@ char* type_to_string(const type in_)
 	return out;
 }
 
-output* int_to_size(const int in_)
+output* __int_to_size(const int in_)
 {
 	output* out = __get_new_output_type(SIZE);
 
@@ -42,14 +42,27 @@ output* int_to_size(const int in_)
 	{
 		size_t temp = (size_t)in_;
 
-		out = __update_output_value(out, size_pointer_to_void(&temp), SIZE);
+		out = __update_output_variable(out, size_pointer_to_void(&temp), SIZE);
 	}
 	else out = __update_output_error_warning_conversion(out, int_pointer_to_void((int*)&in_), INT, SIZE);
 
 	return out;
 }
 
-int size_to_int(const size_t in_) { return (int)in_; }
+output* __size_to_int(const size_t in_)
+{
+	output* out = __get_new_output_type(INT);
+
+	if (in_ <= INT_MAX)
+	{
+		int temp = (int)in_;
+
+		out = __update_output_variable(out, int_pointer_to_void(&temp), INT);
+	}
+	else out = __update_output_error_warning_conversion(out, size_pointer_to_void((size_t*)&in_), SIZE, INT);
+
+	return out;
+}
 
 char* get_type_format(const type in_)
 {

@@ -3,13 +3,21 @@
 
 #include "code/headers/all.h"
 
-void run_tests();
+int _tot_errors;
 
-void run_tests_strings();
+void run_all();
 
-void run_tests_arrays();
+void run_strings();
 
-void run_tests_structs();
+void run_strings_wrong();
+
+void run_arrays();
+
+void run_arrays_wrong();
+
+void run_structs();
+
+void run_structs_wrong();
 
 char* get_assessment(boolean);
 
@@ -20,6 +28,8 @@ void print_start_wrong();
 void print_end(char*);
 
 void print_end_wrong();
+
+void print_last();
 
 void print_start_end_internal(char*, boolean, boolean);
 

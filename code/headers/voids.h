@@ -15,13 +15,11 @@ void* __assign_free_both_void(void*, void*, type);
 
 void free_void(void*, type);
 
-void* get_wrong_void(type);
-
 void* _get_wrong_void(type, boolean);
 
-void* get_wrong_void_stack(type);
+void* get_wrong_void(type);
 
-void* __get_wrong_void_heap(type);
+void* __get_wrong_void(type);
 
 void* __get_wrong_void_free(void*, type);
 

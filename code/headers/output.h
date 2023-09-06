@@ -23,49 +23,49 @@ output* __update_output(output*, output*);
 
 boolean output_is_ok(output*);
 
-boolean output_value_is_ok(output*);
+boolean output_variable_is_ok(output*);
 
-boolean output_array_value_is_ok(output*);
+boolean output_array_variable_is_ok(output*);
 
-boolean output_value_is_array(output*);
+boolean output_variable_is_array(output*);
 
-boolean output_value_is_array_size(size_t);
+boolean output_variable_is_array_size(size_t);
 
 boolean outputs_are_equal(output*, output*);
 
-type get_output_type_value(output*, boolean);
+type get_output_type_variable(output*, boolean);
 
-type_error get_output_error_value(output*, boolean);
+type_error get_output_error_variable(output*, boolean);
 
-type_warning get_output_warning_value(output*, boolean);
+type_warning get_output_warning_variable(output*, boolean);
 
-error_warning* get_output_error_warning_value(output*, boolean);
+error_warning* get_output_error_warning_variable(output*, boolean);
 
-output* get_output_output_value(output*, boolean);
+output* get_output_output_variable(output*, boolean);
 
-boolean get_output_boolean_value(output*, boolean);
+boolean get_output_boolean_variable(output*, boolean);
 
-char* get_output_string_value(output*, boolean);
+char* get_output_string_variable(output*, boolean);
 
-char get_output_char_value(output*, boolean);
+char get_output_char_variable(output*, boolean);
 
-int get_output_int_value(output*, boolean);
+int get_output_int_variable(output*, boolean);
 
-size_t get_output_size_value(output*, boolean);
+size_t get_output_size_variable(output*, boolean);
 
-short get_output_short_value(output*, boolean);
+short get_output_short_variable(output*, boolean);
 
-long get_output_long_value(output*, boolean);
+long get_output_long_variable(output*, boolean);
 
-double get_output_double_value(output*, boolean);
+double get_output_double_variable(output*, boolean);
 
 char* __output_to_string(output*);
 
-char* _output_value_to_string(output*);
+char* _output_variable_to_string(output*);
 
-char* __output_value_to_string_full(output*);
+char* __output_variable_to_string_full(output*);
 
-output* __update_output_value(output*, void*, type);
+output* __update_output_variable(output*, void*, type);
 
 output* remove_output_error_warning(output*);
 
@@ -77,7 +77,7 @@ output* __update_output_error_warning_conversion(output*, void*, type, type);
 
 output* __initialise_output_internal(output);
 
-void free_output_value_internal(output*);
+void free_output_variable_internal(output*);
 
 void free_output_error_warning_internal(output*);
 
@@ -85,9 +85,9 @@ output* __assign_output_internal(output*, output*);
 
 boolean output_is_ok_internal(output*, boolean);
 
-boolean output_values_are_equal_internal(output*, output*);
+boolean output_variables_are_equal_internal(output*, output*);
 
-char* __output_array_value_to_string_internal(output*);
+char* __output_array_variable_to_string_internal(output*);
 
 output* __get_wrong_output_internal(type, type_error, type_warning, boolean, void*);
 

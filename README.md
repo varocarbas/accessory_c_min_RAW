@@ -2,8 +2,6 @@
 
 Library containing a set of miscellaneous resources accessorily used by most of my C code. 
 
-**WARNING: this repository is being regularly updated with all the latest modifications. And I am currently working on the most basic parts and coming up with the main structure and conventions. The likelihood of finding important errors in some parts is high.**
-
 # \_RAW repositories
 All the \_RAW repositories include code which I use for personal purposes. The overall structure and used conventions are assumed to be more than enough for an experienced programmer to adequately understand and appreciate everything. 
 

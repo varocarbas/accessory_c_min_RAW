@@ -14,7 +14,7 @@ error_warning;
 
 typedef struct output
 {
-	void* _value;
+	void* _variable;
 	size_t _size;
 	type _type;
 	boolean _is_ok;

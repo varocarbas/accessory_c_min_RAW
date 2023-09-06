@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 
 #include "_first_enums.h"
 #include "_first_structs.h"

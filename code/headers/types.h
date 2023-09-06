@@ -17,9 +17,9 @@ boolean type_array_is_2d_pointer(type);
 
 char* type_to_string(type);
 
-output* int_to_size(int);
+output* __int_to_size(int);
 
-int size_to_int(size_t);
+output* __size_to_int(size_t);
 
 char* get_type_format(type);
 

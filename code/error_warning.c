@@ -50,7 +50,7 @@ boolean error_warnings_are_equal(error_warning* in1_, error_warning* in2_)
 	return out;
 }
 
-char* __error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? __assign_string(in_->_message) : __get_wrong_string_heap()); }
+char* __error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) == TRUE ? __assign_string(in_->_message) : __get_wrong_string()); }
 
 error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)
 {
@@ -79,7 +79,7 @@ char* __get_error_warning_message_internal(const type_error error_, const type_w
 
 char* __get_error_warning_message_common_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)
 {
-	if ((is_error_ == TRUE && error_ == WRONG_ERROR) || (is_error_ == FALSE && warning_ == WRONG_WARNING)) return __get_wrong_string_heap();
+	if ((is_error_ == TRUE && error_ == WRONG_ERROR) || (is_error_ == FALSE && warning_ == WRONG_WARNING)) return __get_wrong_string();
 
 	char* out = (is_error_ == TRUE ? __error_to_string_full(error_) : __warning_to_string_full(warning_));
 
@@ -126,14 +126,16 @@ char* __error_warning_to_string_full_internal(const type_error error_, const typ
 		error_warning = warning_to_string(warning_);
 	}
 
-	char* items[2];
+	size_t size = 2;
+	char** items = __initialise_string_array(size);
 
-	items[0] = key;
-	items[1] = error_warning;
+	items = __update_string_array(items, key, 0);
+	items = __update_string_array(items, error_warning, 1);
 
 	char* out = __concatenate_strings_internal(items, 2, DEFAULT_SEPARATOR);
 
 	free_string(key);
+	free_string_array(items, size);
 
 	return out;
 }

@@ -21,9 +21,9 @@ void free_string_array(char**, size_t);
 
 char* _get_wrong_string(boolean);
 
-char* get_wrong_string_stack();
+char* get_wrong_string();
 
-char* __get_wrong_string_heap();
+char* __get_wrong_string();
 
 char* __get_wrong_string_free(char*);
 
