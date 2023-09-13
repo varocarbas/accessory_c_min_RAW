@@ -1,14 +1,14 @@
 #include "headers/types.h"
 
-boolean type_is_native(const type in_) { return (type_is_custom(in_) == FALSE); }
+boolean type_is_native(const type in_) { return !type_is_custom(in_); }
 
-boolean type_is_custom(const type in_) { return (type_is_enum(in_) == TRUE || type_is_struct(in_) == TRUE); }
+boolean type_is_custom(const type in_) { return (type_is_enum(in_) || type_is_struct(in_)); }
 
 boolean type_is_enum(const type in_) { return (in_ == TYPE || in_ == ERROR || in_ == WARNING || in_ == BOOLEAN); }
 
 boolean type_is_struct(const type in_) { return (in_ == ERROR_WARNING || in_ == OUTPUT); }
 
-boolean type_is_pointer(const type in_) { return (in_ == STRING || type_is_struct(in_) == TRUE); }
+boolean type_is_pointer(const type in_) { return (in_ == STRING || type_is_struct(in_)); }
 
 boolean type_array_is_2d_pointer(const type in_) { return type_is_pointer(in_); }
 
@@ -68,7 +68,7 @@ char* get_type_format(const type in_)
 {
 	char* out;
 
-	if (in_ == STRING || type_is_custom(in_) == TRUE) out = "%s";
+	if (in_ == STRING || type_is_custom(in_)) out = "%s";
 	else if (in_ == CHAR) out = "%c";
 	else if (in_ == INT) out = "%d";
 	else if (in_ == SIZE) out = "%zu";

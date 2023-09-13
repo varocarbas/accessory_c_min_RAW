@@ -12,6 +12,7 @@
 #include "_first_structs.h"
 #include "_first_defaults.h"
 #include "_first_wrongs.h"
+#include "_first_os.h"
 #include "_first_misc.h"
 
 #endif

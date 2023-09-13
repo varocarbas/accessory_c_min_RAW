@@ -107,9 +107,9 @@ char* __normalise_string_internal(char*, size_t);
 
 char* __string_to_lower_upper_internal(char*, size_t, boolean);
 
-int index_of_string_int_internal(char*, char*, boolean, size_t);
+int index_of_string_int_internal(char*, char*, size_t, boolean);
 
-int index_of_string_int_common_internal(char*, char*, boolean, size_t);
+int index_of_string_int_common_internal(char*, char*, size_t);
 
 size_t get_matches_in_string_internal(char*, char*, boolean);
 

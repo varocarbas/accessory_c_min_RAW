@@ -45,7 +45,7 @@ void run_strings()
 
 	boolean_ = string_is_ok(string_h);
 
-	printf("%d -- string_is_ok: |%s| -> %s (%s)\n\n", count, string_h, boolean_to_string(boolean_), get_assessment(boolean_ == FALSE ? TRUE : FALSE));
+	printf("%d -- string_is_ok: |%s| -> %s (%s)\n\n", count, string_h, boolean_to_string(boolean_), get_assessment(!boolean_));
 
 	//2
 	count++;
@@ -66,7 +66,7 @@ void run_strings()
 	size = get_string_length(string_h);
 	string2_h = __assign_free_both_string(string2_h, __size_to_string(size));
 
-	printf("%d -- __trim_string + get_string_length: |%s| -> |%s|, %s (%s)\n\n", count, string_s, string_h, string2_h, get_assessment(size == 3 ? TRUE : FALSE));
+	printf("%d -- __trim_string + get_string_length: |%s| -> |%s|, %s (%s)\n\n", count, string_s, string_h, string2_h, get_assessment(size == 3));
 
 	//4
 	count++;
@@ -168,7 +168,7 @@ void run_strings_wrong()
 	size = get_string_length(string2_h);
 	string3_h = __assign_free_both_string(string3_h, __size_to_string(size));
 
-	printf("%d -- __trim_string + get_string_length (wrong): |%s| -> |%s|, %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(size == 0 ? TRUE : FALSE));
+	printf("%d -- __trim_string + get_string_length (wrong): |%s| -> |%s|, %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(size == 0));
 
 	//2
 	count++;
@@ -197,7 +197,7 @@ void run_strings_wrong()
 	//4
 	count++;
 
-	char** strings = WRONG_POINTER;
+	char** strings = get_wrong_array();
 	string_h = __assign_free_both_string(string_h, __array_to_string(strings, size, STRING));
 
 	size = WRONG_SIZE;
@@ -221,7 +221,7 @@ void run_strings_wrong()
 
 	string4_h = __assign_free_both_string(string4_h, __output_to_string(output_));
 
-	printf("%d -- __index_of_string (wrong): |%s|, |%s|, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, get_assessment((output_->_is_ok == FALSE ? TRUE : FALSE)));
+	printf("%d -- __index_of_string (wrong): |%s|, |%s|, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, get_assessment(!output_->_is_ok));
 
 	//6
 	count++;
@@ -233,7 +233,7 @@ void run_strings_wrong()
 
 	string3_h = __assign_free_both_string(string3_h, __output_to_string(output_));
 
-	printf("%d -- __split_string (wrong): |%s|, |%s| -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment((output_->_is_ok == FALSE ? TRUE : FALSE)));
+	printf("%d -- __split_string (wrong): |%s|, |%s| -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(!output_->_is_ok));
 
 	free_string(string_h);
 	free_string(string2_h);
@@ -255,10 +255,17 @@ void run_arrays()
 	type* types;
 	size_t types_size = WRONG_SIZE;
 
+	long* longs;
+	size_t longs_size = WRONG_SIZE;
+
+	boolean* booleans;
+	size_t booleans_size = WRONG_SIZE;
+
 	char* string_h = __get_wrong_string();
 	char* string2_h = __get_wrong_string();
 	char* string3_h = __get_wrong_string();
 	char* string4_h = __get_wrong_string();
+	char* string5_h = __get_wrong_string();
 
 	boolean boolean_ = WRONG_BOOLEAN;
 	type type_ = WRONG_TYPE;
@@ -285,7 +292,7 @@ void run_arrays()
 
 	int int2 = get_int_array_value(ints, i);
 
-	printf("%d -- get_array_item/get_int_array_value: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment((int1 == int2) ? TRUE : FALSE));
+	printf("%d -- get_array_item/get_int_array_value: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(int1 == int2));
 
 	//2
 	count++;
@@ -342,7 +349,7 @@ void run_arrays()
 
 	string3_h = __assign_free_both_string(string3_h, __array_to_string(strings, size, type_));
 
-	printf("%d -- __shrink_free_array: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(array_is_ok(strings, size, type_)));
+	printf("%d -- __shrink_free_array: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(array_is_ok(strings, strings_size, type_)));
 
 	//4
 	count++;
@@ -366,16 +373,87 @@ void run_arrays()
 
 	string4_h = __assign_free_out_string(string4_h, type_to_string(type_));
 
-	printf("%d -- arrays_are_equal: %s, %s, %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, boolean_to_string(boolean_), get_assessment((boolean_ == FALSE ? TRUE : FALSE)));
+	printf("%d -- arrays_are_equal: %s, %s, %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, boolean_to_string(boolean_), get_assessment(!boolean_));
+
+	//5
+	count++;
+
+	type_ = LONG;
+
+	long longs2[] = { 1l, 2l, 3l };
+
+	longs_size = 3;
+	size = longs_size;
+
+	longs = __assign_array(longs2, size, type_);
+
+	string_h = __assign_free_both_string(string_h, __array_to_string(longs, size, type_));
+
+	longs_size = 6;
+	longs = __embiggen_free_array(longs, longs_size, type_, size);
+
+	string2_h = __assign_free_both_string(string2_h, __size_to_string(longs_size));
+
+	string3_h = __assign_free_both_string(string3_h, __array_to_string(longs, longs_size, type_));
+
+	printf("%d -- __embiggen_array: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(array_is_ok(longs, longs_size, type_)));
+
+	//6
+	count++;
+
+	type_ = BOOLEAN;
+
+	boolean booleans2[] = { TRUE, TRUE };
+
+	booleans_size = 2;
+
+	string_h = __assign_free_both_string(string_h, __array_to_string(booleans2, booleans_size, type_));
+
+	i = 0;
+	string2_h = __assign_free_both_string(string2_h, __size_to_string(i));
+
+	booleans = _update_array_wrong(__assign_array(booleans2, booleans_size, type_), i, type_);
+
+	string3_h = __assign_free_both_string(string3_h, __array_to_string(booleans, booleans_size, type_));
+
+	printf("%d -- _update_array_wrong: %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment((booleans[i] == WRONG_BOOLEAN)));
+
+	//7
+	count++;
+
+	type_ = WARNING;
+
+	type_warning target = WARNING_NOT_FOUND;
+
+	string_h = __assign_free_out_string(string_h, warning_to_string(target));
+
+	type_warning warnings[] = { WRONG_WARNING, target, WRONG_WARNING };
+	size = 3;
+
+	string2_h = __assign_free_both_string(string2_h, __array_to_string(warnings, size, type_));
+
+	string3_h = __assign_free_out_string(string3_h, type_to_string(type_));
+
+	i = WRONG_SIZE;
+	string4_h = __assign_free_both_string(string4_h, __size_to_string(i));
+
+	int i2 = index_of_array_int(warning_pointer_to_void(&target), warnings, size, type_, i);
+
+	string5_h = __assign_free_both_string(string5_h, __int_to_string(i2));
+
+	printf("%d -- index_of_array_int: %s, %s, %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, string5_h, get_assessment((i2 == 1)));
 
 	free_string(string_h);
 	free_string(string2_h);
 	free_string(string3_h);
 	free_string(string4_h);
+	free_string(string5_h);
 
 	free_string_array(strings, strings_size);
 
 	free_array(types, types_size, TYPE);
+	free_array(longs, longs_size, LONG);
+	free_array(booleans, booleans_size, BOOLEAN);
 
 	run_arrays_wrong();
 
@@ -394,10 +472,14 @@ void run_arrays_wrong()
 	type* types2;
 	size_t types2_size = WRONG_SIZE;
 
+	long* longs;
+	size_t longs_size = WRONG_SIZE;
+
 	char* string_h = __get_wrong_string();
 	char* string2_h = __get_wrong_string();
 	char* string3_h = __get_wrong_string();
 	char* string4_h = __get_wrong_string();
+	char* string5_h = __get_wrong_string();
 
 	boolean boolean_ = WRONG_BOOLEAN;
 	type type_ = WRONG_TYPE;
@@ -411,7 +493,7 @@ void run_arrays_wrong()
 	type_ = INT;
 	size = 0;
 
-	int* ints = WRONG_POINTER;
+	int* ints = get_wrong_array();
 
 	string_h = __assign_free_both_string(string_h, __array_to_string(ints, size, type_));
 
@@ -424,7 +506,7 @@ void run_arrays_wrong()
 
 	int int2 = get_int_array_value(ints, i);
 
-	printf("%d -- get_array_item/get_int_array_value (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment((int1 == int2) ? TRUE : FALSE));
+	printf("%d -- get_array_item/get_int_array_value (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(int1 == int2));
 
 	//2
 	count++;
@@ -457,12 +539,10 @@ void run_arrays_wrong()
 
 	free_array(strings, strings_size, type_);
 
-	strings_size = 5;
-	strings = __initialise_string_array(strings_size);
-
-	for (size_t i = 0; i < strings_size; i++) { strings = __update_string_array(strings, WRONG_STRING, i); }
-
 	type_ = STRING;
+
+	strings_size = WRONG_SIZE;
+	strings = __get_wrong_array();
 
 	string_h = __assign_free_both_string(string_h, __array_to_string(strings, strings_size, type_));
 
@@ -475,7 +555,7 @@ void run_arrays_wrong()
 
 	string3_h = __assign_free_both_string(string3_h, __array_to_string(strings, size, type_));
 
-	printf("%d -- __shrink_free_array (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment((array_is_ok(strings, size, type_) == FALSE ? TRUE : FALSE)));
+	printf("%d -- __shrink_free_array (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(!array_is_ok(strings, size, type_)));
 
 	//4
 	count++;
@@ -498,17 +578,83 @@ void run_arrays_wrong()
 
 	printf("%d -- arrays_are_equal (wrong): %s, %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, boolean_to_string(boolean_), get_assessment(boolean_));
 
+	//5
+	count++;
+
+	type_ = LONG;
+
+	longs_size = WRONG_SIZE;
+	size = longs_size;
+
+	longs = __get_wrong_array();
+
+	string_h = __assign_free_both_string(string_h, __array_to_string(longs, size, type_));
+
+	longs_size = WRONG_SIZE;
+	longs = __embiggen_free_array(longs, longs_size, type_, size);
+
+	string2_h = __assign_free_both_string(string2_h, __size_to_string(longs_size));
+
+	string3_h = __assign_free_both_string(string3_h, __array_to_string(longs, longs_size, type_));
+
+	printf("%d -- __embiggen_array (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(!array_is_ok(longs, longs_size, type_)));
+
+	//6
+	count++;
+
+	type_ = BOOLEAN;
+
+	size = WRONG_SIZE;
+	boolean* booleans2 = get_wrong_array();
+
+	string_h = __assign_free_both_string(string_h, __array_to_string(booleans2, size, type_));
+
+	i = WRONG_SIZE;
+	string2_h = __assign_free_both_string(string2_h, __size_to_string(i));
+
+	booleans2 = _update_array_wrong(booleans2, i, type_);
+
+	string3_h = __assign_free_both_string(string3_h, __array_to_string(booleans2, size, type_));
+
+	printf("%d -- _update_array_wrong (wrong): %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, get_assessment(!array_is_ok_min_internal(booleans2)));
+
+	//7
+	count++;
+
+	type_ = WARNING;
+
+	type_warning target = WRONG_WARNING;
+
+	string_h = __assign_free_out_string(string_h, warning_to_string(target));
+
+	type_warning* warnings = get_wrong_array();
+	size = WRONG_SIZE;
+
+	string2_h = __assign_free_both_string(string2_h, __array_to_string(warnings, size, type_));
+
+	string3_h = __assign_free_out_string(string3_h, type_to_string(type_));
+
+	i = WRONG_SIZE;
+	string4_h = __assign_free_both_string(string4_h, __size_to_string(i));
+
+	int i2 = index_of_array_int(warning_pointer_to_void(&target), warnings, size, type_, i);
+
+	string5_h = __assign_free_both_string(string5_h, __int_to_string(i2));
+
+	printf("%d -- index_of_array_int (wrong): %s, %s, %s, %s -> %s (%s)\n\n", count, string_h, string2_h, string3_h, string4_h, string5_h, get_assessment((i2 == WRONG_I)));
+
 	free_string(string_h);
 	free_string(string2_h);
 	free_string(string3_h);
 	free_string(string4_h);
+	free_string(string5_h);
 
 	free_string_array(strings, strings_size);
 
-	type_ = TYPE;
+	free_array(types, types_size, TYPE);
+	free_array(types2, types2_size, TYPE);
 
-	free_array(types, types_size, type_);
-	free_array(types2, types2_size, type_);
+	free_array(longs, longs_size, LONG);
 
 	print_end_wrong();
 }
@@ -706,7 +852,7 @@ char* get_assessment(const boolean is_ok_)
 {
 	char* out;
 
-	if (is_ok_ == TRUE) out = "OK";
+	if (is_ok_) out = "OK";
 	else
 	{
 		_tot_errors++;
@@ -741,16 +887,16 @@ void print_last()
 
 void print_start_end_internal(char* what_, const boolean is_start_, const boolean is_wrong_)
 {
-	char* what = (is_wrong_ == TRUE ? __assign_string("wrong") : __string_to_upper(what_));
+	char* what = (is_wrong_ ? __assign_string("wrong") : __string_to_upper(what_));
 	char* separator = (is_start_ ? "--- " : " ---");
 
 	char** items = __initialise_string_array(2);
 
 	size_t i = 0;
-	items = __update_string_array(items, (is_start_ == TRUE ? separator : what), i);
+	items = __update_string_array(items, (is_start_ ? separator : what), i);
 
 	i++;
-	items = __update_string_array(items, (is_start_ == TRUE ? what : separator), i);
+	items = __update_string_array(items, (is_start_ ? what : separator), i);
 
 	size_t size = i + 1;
 

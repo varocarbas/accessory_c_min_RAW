@@ -31,9 +31,15 @@ boolean array_is_ok(void*, size_t, type);
 
 boolean arrays_are_equal(void*, size_t, void*, size_t, type);
 
+void* __resize_array(void*, size_t, size_t, type, boolean);
+
 void* __shrink_array(void*, size_t, type);
 
 void* __shrink_free_array(void*, size_t, type, size_t);
+
+void* __embiggen_array(void*, size_t, type);
+
+void* __embiggen_free_array(void*, size_t, type, size_t);
 
 void* get_array_item(void*, size_t, type);
 
@@ -93,11 +99,17 @@ double get_double_array_value(void*, size_t);
 
 void* _update_array(void*, void*, size_t, type);
 
+void* _update_array_wrong(void*, size_t, type);
+
 boolean update_array_is_heap(type);
 
 void print_array(void*, size_t, type);
 
 char* __array_to_string(void*, size_t, type);
+
+output* __index_of_array(void*, void*, size_t, type, size_t);
+
+int index_of_array_int(void*, void*, size_t, type, size_t);
 
 void* __initialise_array_internal(size_t, type, size_t);
 
@@ -115,7 +127,9 @@ boolean array_is_ok_internal(void*, type);
 
 boolean array_is_ok_min_internal(void*);
 
-void* __shrink_array_internal(void*, size_t, type, boolean, size_t);
+void* _update_array_internal(void*, void*, size_t, type, boolean);
+
+void* __shrink_embiggen_array_internal(void*, size_t, type, boolean, size_t, boolean);
 
 void* get_array_item_internal(void*, size_t, type);
 
@@ -134,5 +148,7 @@ void print_array_start_end_internal(boolean);
 void print_array_item_internal(size_t, size_t, void*, char*, type);
 
 char* __array_to_string_internal(char*, void*, size_t, type, boolean);
+
+int index_of_array_int_internal(void*, void*, size_t, type, size_t);
 
 #endif

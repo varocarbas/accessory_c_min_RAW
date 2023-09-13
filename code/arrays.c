@@ -2,17 +2,17 @@
 
 void* __initialise_array(const size_t size_, const type type_) { return ((size_ > WRONG_SIZE && type_ != WRONG_TYPE) ? __initialise_array_internal(size_, type_, DEFAULT_ARRAYS_ITEM_SIZE) : __get_wrong_array()); }
 
-void* __assign_array(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) == TRUE ? __assign_array_internal(WRONG_POINTER, in_, size_, type_, FALSE, FALSE) : __get_wrong_array()); }
+void* __assign_array(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) ? __assign_array_internal(get_wrong_array(), in_, size_, type_, FALSE, FALSE) : __get_wrong_array()); }
 
-void* __assign_free_in_array(void* in_h_, const size_t size_, const type type_) { return (array_is_ok(in_h_, size_, type_) == TRUE ? __assign_array_internal(WRONG_POINTER, in_h_, size_, type_, FALSE, TRUE) : __get_wrong_array_free(in_h_, size_, type_)); }
+void* __assign_free_in_array(void* in_h_, const size_t size_, const type type_) { return (array_is_ok(in_h_, size_, type_) ? __assign_array_internal(get_wrong_array(), in_h_, size_, type_, FALSE, TRUE) : __get_wrong_array_free(in_h_, size_, type_)); }
 
-void* __assign_free_out_array(void* out_h_, void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) == TRUE ? __assign_array_internal(out_h_, WRONG_POINTER, size_, type_, TRUE, FALSE) : __get_wrong_array_free(out_h_, size_, type_)); }
+void* __assign_free_out_array(void* out_h_, void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) ? __assign_array_internal(out_h_, get_wrong_array(), size_, type_, TRUE, FALSE) : __get_wrong_array_free(out_h_, size_, type_)); }
 
-void* __assign_free_both_array(void* out_h_, void* in_h_, const size_t size_, const type type_) { return (array_is_ok(in_h_, size_, type_) == TRUE ? __assign_array_internal(out_h_, in_h_, size_, type_, TRUE, TRUE) : __get_wrong_array_free_both(out_h_, in_h_, size_, type_)); }
+void* __assign_free_both_array(void* out_h_, void* in_h_, const size_t size_, const type type_) { return (array_is_ok(in_h_, size_, type_) ? __assign_array_internal(out_h_, in_h_, size_, type_, TRUE, TRUE) : __get_wrong_array_free_both(out_h_, in_h_, size_, type_)); }
 
 void free_array(void* in_h_, const size_t size_, const type type_)
 {
-	if (type_array_is_2d_pointer(type_) == TRUE) free_2d_pointer(in_h_, size_, type_);
+	if (type_array_is_2d_pointer(type_)) free_2d_pointer(in_h_, size_, type_);
 	else free_internal(in_h_, type_, FALSE);
 }
 
@@ -22,13 +22,13 @@ void* get_wrong_array() { return get_wrong(WRONG_TYPE, TRUE); }
 
 void* __get_wrong_array() { return __get_wrong(WRONG_TYPE, TRUE); }
 
-void* __get_wrong_array_free(void* in_out_h_, const size_t size_, const type type_) { return __get_wrong_array_free_internal(in_out_h_, WRONG_POINTER, size_, type_, TRUE, FALSE); }
+void* __get_wrong_array_free(void* in_out_h_, const size_t size_, const type type_) { return __get_wrong_array_free_internal(in_out_h_, get_wrong_array(), size_, type_, TRUE, FALSE); }
 
 void* __get_wrong_array_free_both(void* out_h_, void* in_h_, const size_t size_, const type type_) { return __get_wrong_array_free_internal(in_h_, out_h_, size_, type_, TRUE, TRUE); }
 
-boolean is_array(const size_t size_) { return (size_ > WRONG_SIZE ? TRUE : FALSE); }
+boolean is_array(const size_t size_) { return (size_ > WRONG_SIZE); }
 
-boolean array_is_ok(void* in_, const size_t size_, const type type_) { return (array_is_ok_internal(in_, type_) == TRUE && size_ > WRONG_SIZE); }
+boolean array_is_ok(void* in_, const size_t size_, const type type_) { return (array_is_ok_internal(in_, type_) && size_ > WRONG_SIZE); }
 
 boolean arrays_are_equal(void* in1_, const size_t size1_, void* in2_, const size_t size2_, const type type_)
 {
@@ -40,7 +40,7 @@ boolean arrays_are_equal(void* in1_, const size_t size1_, void* in2_, const size
 	boolean is_ok1 = array_is_ok(in1_, size1_, type_);
 	boolean is_ok2 = array_is_ok(in2_, size2_, type_);
 
-	if (is_ok1 == FALSE || is_ok2 == FALSE) return (is_ok1 == is_ok2 ? TRUE : FALSE);
+	if (!is_ok1 || !is_ok2) return (is_ok1 == is_ok2);
 
 	for (size_t i = 0; i < size1_; i++)
 	{
@@ -52,99 +52,128 @@ boolean arrays_are_equal(void* in1_, const size_t size1_, void* in2_, const size
 		free_void(val1, type_);
 		free_void(val2, type_);
 
-		if (out == FALSE) break;
+		if (!out) break;
 	}
 
 	return out;
 }
 
-void* __shrink_array(void* in_, const size_t new_size_, const type type_) { return __shrink_array_internal(in_, new_size_, type_, FALSE, WRONG_SIZE); }
+void* __resize_array(void* in_, const size_t size_, const size_t new_size_, const type type_, const boolean free_in_) { return (size_ != new_size_ ? __shrink_embiggen_array_internal(in_, new_size_, type_, free_in_, size_, (new_size_ < size_)) : __assign_array(in_, size_, type_)); }
 
-void* __shrink_free_array(void* in_, const size_t new_size_, const type type_, const size_t orig_size_) { return __shrink_array_internal(in_, new_size_, type_, TRUE, orig_size_); }
+void* __shrink_array(void* in_, const size_t new_size_, const type type_) { return __shrink_embiggen_array_internal(in_, new_size_, type_, FALSE, WRONG_SIZE, TRUE); }
 
-void* get_array_item(void* in_, const size_t i_, const type type_) { return (array_is_ok_internal(in_, type_) == TRUE ? get_array_item_internal(in_, i_, type_) : WRONG_POINTER); }
+void* __shrink_free_array(void* in_, const size_t new_size_, const type type_, const size_t orig_size_) { return __shrink_embiggen_array_internal(in_, new_size_, type_, TRUE, orig_size_, TRUE); }
 
-type* get_type_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (type*)get_array_item_internal(in_, i_, TYPE) : WRONG_POINTER); }
+void* __embiggen_array(void* in_, const size_t new_size_, const type type_) { return __shrink_embiggen_array_internal(in_, new_size_, type_, FALSE, WRONG_SIZE, FALSE); }
 
-type_error* get_error_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (type_error*)get_array_item_internal(in_, i_, ERROR) : WRONG_POINTER); }
+void* __embiggen_free_array(void* in_, const size_t new_size_, const type type_, const size_t orig_size_) { return __shrink_embiggen_array_internal(in_, new_size_, type_, TRUE, orig_size_, FALSE); }
 
-type_warning* get_warning_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (type_warning*)get_array_item_internal(in_, i_, WARNING) : WRONG_POINTER); }
+void* get_array_item(void* in_, const size_t i_, const type type_) { return (array_is_ok_internal(in_, type_) ? get_array_item_internal(in_, i_, type_) : get_wrong_array()); }
 
-error_warning* get_error_warning_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (error_warning*)get_array_item_internal(in_, i_, ERROR_WARNING) : WRONG_POINTER); }
+type* get_type_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (type*)get_array_item_internal(in_, i_, TYPE) : get_wrong_array()); }
 
-output* get_output_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (output*)get_array_item_internal(in_, i_, OUTPUT) : WRONG_POINTER); }
+type_error* get_error_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (type_error*)get_array_item_internal(in_, i_, ERROR) : get_wrong_array()); }
 
-boolean* get_boolean_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (boolean*)get_array_item_internal(in_, i_, BOOLEAN) : WRONG_POINTER); }
+type_warning* get_warning_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (type_warning*)get_array_item_internal(in_, i_, WARNING) : get_wrong_array()); }
 
-char* get_string_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (char*)get_array_item_internal(in_, i_, STRING) : WRONG_POINTER); }
+error_warning* get_error_warning_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (error_warning*)get_array_item_internal(in_, i_, ERROR_WARNING) : get_wrong_array()); }
 
-char* get_char_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (char*)get_array_item_internal(in_, i_, CHAR) : WRONG_POINTER); }
+output* get_output_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (output*)get_array_item_internal(in_, i_, OUTPUT) : get_wrong_array()); }
 
-int* get_int_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (int*)get_array_item_internal(in_, i_, INT) : WRONG_POINTER); }
+boolean* get_boolean_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (boolean*)get_array_item_internal(in_, i_, BOOLEAN) : get_wrong_array()); }
 
-size_t* get_size_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (size_t*)get_array_item_internal(in_, i_, SIZE) : WRONG_POINTER); }
+char* get_string_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (char*)get_array_item_internal(in_, i_, STRING) : get_wrong_array()); }
 
-short* get_short_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (short*)get_array_item_internal(in_, i_, SHORT) : WRONG_POINTER); }
+char* get_char_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (char*)get_array_item_internal(in_, i_, CHAR) : get_wrong_array()); }
 
-long* get_long_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (long*)get_array_item_internal(in_, i_, LONG) : WRONG_POINTER); }
+int* get_int_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (int*)get_array_item_internal(in_, i_, INT) : get_wrong_array()); }
 
-double* get_double_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? (double*)get_array_item_internal(in_, i_, DOUBLE) : WRONG_POINTER); }
+size_t* get_size_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (size_t*)get_array_item_internal(in_, i_, SIZE) : get_wrong_array()); }
 
-void* __get_array_value(void* in_, const size_t i_, const type type_) { return (array_is_ok_internal(in_, type_) == TRUE ? __assign_void(get_array_item_internal(in_, i_, type_), type_) : __get_wrong_void(type_)); }
+short* get_short_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (short*)get_array_item_internal(in_, i_, SHORT) : get_wrong_array()); }
 
-type get_type_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_type(get_array_item_internal(in_, i_, TYPE)) : WRONG_TYPE); }
+long* get_long_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (long*)get_array_item_internal(in_, i_, LONG) : get_wrong_array()); }
 
-type_error get_error_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_error(get_array_item_internal(in_, i_, ERROR)) : WRONG_ERROR); }
+double* get_double_array_item(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? (double*)get_array_item_internal(in_, i_, DOUBLE) : get_wrong_array()); }
 
-type_warning get_warning_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_warning(get_array_item_internal(in_, i_, WARNING)) : WRONG_WARNING); }
+void* __get_array_value(void* in_, const size_t i_, const type type_) { return (array_is_ok_internal(in_, type_) ? __assign_void(get_array_item_internal(in_, i_, type_), type_) : __get_wrong_void(type_)); }
 
-error_warning* __get_error_warning_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? __assign_void(void_to_error_warning(get_array_item_internal(in_, i_, ERROR_WARNING)), ERROR_WARNING) : WRONG_ERROR_WARNING); }
+type get_type_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_type(get_array_item_internal(in_, i_, TYPE)) : WRONG_TYPE); }
 
-output* __get_output_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? __assign_void(void_to_output(get_array_item_internal(in_, i_, OUTPUT)), OUTPUT) : WRONG_OUTPUT); }
+type_error get_error_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_error(get_array_item_internal(in_, i_, ERROR)) : WRONG_ERROR); }
 
-boolean get_boolean_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_boolean(get_array_item_internal(in_, i_, BOOLEAN)) : WRONG_BOOLEAN); }
+type_warning get_warning_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_warning(get_array_item_internal(in_, i_, WARNING)) : WRONG_WARNING); }
 
-char* __get_string_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? __assign_string(void_to_string(get_array_item_internal(in_, i_, STRING))) : WRONG_STRING); }
+error_warning* __get_error_warning_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? __assign_void(void_to_error_warning(get_array_item_internal(in_, i_, ERROR_WARNING)), ERROR_WARNING) : WRONG_ERROR_WARNING); }
 
-char get_char_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_char(get_array_item_internal(in_, i_, CHAR)) : WRONG_CHAR); }
+output* __get_output_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? __assign_void(void_to_output(get_array_item_internal(in_, i_, OUTPUT)), OUTPUT) : WRONG_OUTPUT); }
 
-int get_int_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_int(get_array_item_internal(in_, i_, INT)) : WRONG_INT); }
+boolean get_boolean_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_boolean(get_array_item_internal(in_, i_, BOOLEAN)) : WRONG_BOOLEAN); }
 
-size_t get_size_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_size(get_array_item_internal(in_, i_, SIZE)) : WRONG_SIZE); }
+char* __get_string_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? __assign_string(void_to_string(get_array_item_internal(in_, i_, STRING))) : WRONG_STRING); }
 
-short get_short_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_short(get_array_item_internal(in_, i_, SHORT)) : WRONG_SHORT); }
+char get_char_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_char(get_array_item_internal(in_, i_, CHAR)) : WRONG_CHAR); }
 
-long get_long_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_long(get_array_item_internal(in_, i_, LONG)) : WRONG_LONG); }
+int get_int_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_int(get_array_item_internal(in_, i_, INT)) : WRONG_INT); }
 
-double get_double_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) == TRUE ? void_to_double(get_array_item_internal(in_, i_, DOUBLE)) : WRONG_DOUBLE); }
+size_t get_size_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_size(get_array_item_internal(in_, i_, SIZE)) : WRONG_SIZE); }
 
-void* _update_array(void* array_, void* value_, const size_t i_, const type type_)
-{
-	if (array_is_ok_internal(array_, type_) == FALSE) return array_;
+short get_short_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_short(get_array_item_internal(in_, i_, SHORT)) : WRONG_SHORT); }
 
-	if (type_array_is_2d_pointer(type_) == TRUE) array_ = __update_2d_pointer_array_internal(array_, value_, i_, type_);
-	else array_ = update_array_default_internal(array_, value_, i_, type_);
+long get_long_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_long(get_array_item_internal(in_, i_, LONG)) : WRONG_LONG); }
 
-	return array_;
-}
+double get_double_array_value(void* in_, const size_t i_) { return (array_is_ok_min_internal(in_) ? void_to_double(get_array_item_internal(in_, i_, DOUBLE)) : WRONG_DOUBLE); }
+
+void* _update_array(void* array_, void* value_, const size_t i_, const type type_) { return (array_is_ok_internal(array_, type_) ? _update_array_internal(array_, value_, i_, type_, FALSE) : array_); }
+
+void* _update_array_wrong(void* array_, const size_t i_, const type type_) { return (array_is_ok_internal(array_, type_) ? _update_array_internal(array_, get_wrong_array(), i_, type_, TRUE) : array_); }
 
 boolean update_array_is_heap(const type type_) { return type_array_is_2d_pointer(type_); }
 
 void print_array(void* in_, const size_t size_, const type type_)
 {
-	if (array_is_ok(in_, size_, type_) == TRUE) _print_array_to_string_internal(in_, size_, type_, TRUE);
+	if (array_is_ok(in_, size_, type_)) _print_array_to_string_internal(in_, size_, type_, TRUE);
 }
 
-char* __array_to_string(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) == TRUE ? _print_array_to_string_internal(in_, size_, type_, FALSE) : __get_wrong_string()); }
+char* __array_to_string(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) ? _print_array_to_string_internal(in_, size_, type_, FALSE) : __get_wrong_string()); }
+
+output* __index_of_array(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_)
+{
+	output* out = __get_new_output_type(SIZE);
+
+	boolean is_ok = (void_type_is_ok(target_, type_) && array_is_ok_internal(array_, type_) && (start_i_ < size_));
+
+	boolean is_error = !is_ok;
+
+	int i = WRONG_I;
+	if (is_ok) i = index_of_array_int_internal(target_, array_, size_, type_, start_i_);
+
+	if (i >= 0)
+	{
+		output* temp = __int_to_size(i);
+
+		is_ok = temp->_is_ok;
+
+		if (is_ok) out = __update_output_variable(out, temp->_variable, SIZE);
+
+		free_output(temp);
+	}
+
+	if (!is_ok) out = (is_error ? __update_output_error_warning_error(out, ERROR_WRONG_INPUTS, string_pointer_to_void("__index_of_array")) : update_output_error_warning_warning(out, WARNING_NOT_FOUND, string_pointer_to_void("__index_of_array")));
+
+	return out;
+}
+
+int index_of_array_int(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_) { return ((void_type_is_ok(target_, type_) && array_is_ok_internal(array_, type_) && (start_i_ < size_)) ? index_of_array_int_internal(target_, array_, size_, type_, start_i_) : WRONG_I); }
 
 void* __initialise_array_internal(const size_t size_, const type type_, const size_t size_items_)
 {
 	if (size_ == WRONG_SIZE || type_ == WRONG_TYPE) return __get_wrong_array();
 
 	void* out = __initialise(size_, type_, TRUE);
-	if (pointer_is_ok(out) == FALSE) return out;
+	if (!pointer_is_ok(out)) return out;
 
-	if (type_array_is_2d_pointer(type_) == TRUE)
+	if (type_array_is_2d_pointer(type_))
 	{
 		for (size_t i = 0; i < size_; i++) { out = __initialise_2d_pointer_array_item_internal(out, i, type_, size_items_); }
 	}
@@ -154,21 +183,21 @@ void* __initialise_array_internal(const size_t size_, const type type_, const si
 
 void* __assign_array_internal(void* out_, void* in_, const size_t size_, const type type_, const boolean free_out_, const boolean free_in_)
 {
-	if (free_out_ == TRUE) free_array(out_, size_, type_);
+	if (free_out_) free_array(out_, size_, type_);
 
-	if (array_is_ok(in_, size_, type_) == FALSE)
+	if (!array_is_ok(in_, size_, type_))
 	{
-		if (free_in_ == TRUE) free_array(in_, size_, type_);
+		if (free_in_) free_array(in_, size_, type_);
 
 		out_ = __get_wrong_array();
 	}
-	else if (type_array_is_2d_pointer(type_) == TRUE)
+	else if (type_array_is_2d_pointer(type_))
 	{
 		out_ = __initialise_update_2d_pointer_array_internal(__initialise_array(size_, type_), in_, size_, type_, WRONG_SIZE, UPDATE);
 	}
 	else out_ = __assign(in_, size_, type_, TRUE);
 
-	if (free_in_ == TRUE) free_array(in_, size_, type_);
+	if (free_in_) free_array(in_, size_, type_);
 
 	return out_;
 }
@@ -219,49 +248,50 @@ void* __get_wrong_array_free_internal(void* out_, void* in_, const size_t size_,
 	return __get_wrong_array();
 }
 
-boolean array_is_ok_internal(void* in_, const type type_) { return (array_is_ok_min_internal(in_) == TRUE && type_ != WRONG_TYPE); }
+boolean array_is_ok_internal(void* in_, const type type_) { return (array_is_ok_min_internal(in_) && type_ != WRONG_TYPE); }
 
-boolean array_is_ok_min_internal(void* in_) { return pointer_is_ok(in_); }
+boolean array_is_ok_min_internal(void* in_) { return (in_ != get_wrong_array()); }
 
-void* __shrink_array_internal(void* in_, const size_t new_size_, const type type_, const boolean free_in_, const size_t orig_size_)
+void* _update_array_internal(void* array_, void* value_, const size_t i_, const type type_, const boolean is_wrong_)
 {
-	if (array_is_ok(in_, new_size_, type_) == FALSE)
+	if (type_array_is_2d_pointer(type_)) array_ = (is_wrong_ ? __initialise_2d_pointer_array_item_internal(array_, i_, type_, DEFAULT_ARRAYS_ITEM_SIZE) : __update_2d_pointer_array_internal(array_, value_, i_, type_));
+	else array_ = update_array_default_internal(array_, (is_wrong_ ? get_wrong_void(type_) : value_), i_, type_);
+
+	return array_;
+}
+
+void* __shrink_embiggen_array_internal(void* in_, const size_t new_size_, const type type_, const boolean free_in_, const size_t orig_size_, const boolean is_shrink_)
+{
+	if (!array_is_ok(in_, new_size_, type_) || (orig_size_ > WRONG_SIZE && ((is_shrink_ && new_size_ > orig_size_) || (!is_shrink_ && new_size_ < orig_size_))))
 	{
-		if (free_in_ == TRUE) free_array(in_, orig_size_, type_);
+		if (free_in_) free_array(in_, orig_size_, type_);
 
 		return __get_wrong_array();
 	}
 
 	void* out = __initialise_array(new_size_, type_);
 
-	boolean is_2d = type_array_is_2d_pointer(type_);
+	size_t orig_max_i = orig_size_ - 1;
 
 	for (size_t i = 0; i < new_size_; i++)
 	{
-		void* value;
-
-		if (is_2d == TRUE)
-		{
-			value = __get_array_value(in_, i, type_);
-
-			out = __update_2d_pointer_array_internal(out, value, i, type_);
-		}
+		if (i > orig_max_i) out = _update_array_wrong(out, i, type_);
 		else
 		{
-			value = __get_array_value(in_, i, type_);
+			void* value = __get_array_value(in_, i, type_);
 
-			out = update_array_default_internal(out, value, i, type_);
+			out = _update_array_internal(out, value, i, type_, FALSE);
+
+			free_void(value, type_);
 		}
-
-		free_void(value, type_);
 	}
 
-	if (free_in_ == TRUE) free_array(in_, orig_size_, type_);
+	if (free_in_) free_array(in_, orig_size_, type_);
 
 	return out;
 }
 
-void* get_array_item_internal(void* in_, const size_t i_, const type type_) { return (type_array_is_2d_pointer(type_) == TRUE ? get_2d_pointer_array_item_internal(in_, i_, type_) : get_default_array_item_internal(in_, i_, type_)); }
+void* get_array_item_internal(void* in_, const size_t i_, const type type_) { return (type_array_is_2d_pointer(type_) ? get_2d_pointer_array_item_internal(in_, i_, type_) : get_default_array_item_internal(in_, i_, type_)); }
 
 void* get_default_array_item_internal(void* in_, const size_t i_, const type type_)
 {
@@ -320,7 +350,7 @@ char* _print_array_to_string_internal(void* in_, const size_t size_, const type 
 {
 	char* out;
 
-	if (is_print_ == TRUE)
+	if (is_print_)
 	{
 		out = WRONG_STRING;
 
@@ -336,23 +366,23 @@ char* _print_array_to_string_internal(void* in_, const size_t size_, const type 
 	{
 		void* value = __get_array_value(in_, i, type_);
 
-		if (is_print_ == TRUE) print_array_item_internal(i, max_i, value, format, type_);
+		if (is_print_) print_array_item_internal(i, max_i, value, format, type_);
 		else out = __array_to_string_internal(out, value, i, type_, FALSE);
 
 		free_void(value, type_);
 	}
 
-	if (is_print_ == TRUE) print_array_start_end_internal(FALSE);
-	else out = __array_to_string_internal(out, WRONG_POINTER, WRONG_SIZE, type_, TRUE);
+	if (is_print_) print_array_start_end_internal(FALSE);
+	else out = __array_to_string_internal(out, get_wrong_array(), WRONG_SIZE, type_, TRUE);
 
 	return out;
 }
 
 void print_array_start_end_internal(const boolean is_start_)
 {
-	print_string_internal((is_start_ == TRUE ? DEFAULT_ENCLOSURE_EXTERNAL_START : DEFAULT_ENCLOSURE_EXTERNAL_END), FALSE);
+	print_string_internal((is_start_ ? DEFAULT_ENCLOSURE_EXTERNAL_START : DEFAULT_ENCLOSURE_EXTERNAL_END), FALSE);
 
-	if (is_start_ == FALSE) print_new_line();
+	if (!is_start_) print_new_line();
 }
 
 void print_array_item_internal(const size_t i_, const size_t max_i_, void* value_, char* format_, const type type_)
@@ -368,14 +398,14 @@ char* __array_to_string_internal(char* out_, void* item_, const size_t i_, const
 
 	boolean free_out = FALSE;
 
-	if (is_end_ == TRUE || i_ > 0)
+	if (is_end_ || i_ > 0)
 	{
 		out = __assign_string(out_);
 
 		free_out = TRUE;
 	}
 
-	if (is_end_ == TRUE)
+	if (is_end_)
 	{
 		char* temp[] = { DEFAULT_ENCLOSURE_EXTERNAL_START, out, DEFAULT_ENCLOSURE_EXTERNAL_END };
 
@@ -396,7 +426,29 @@ char* __array_to_string_internal(char* out_, void* item_, const size_t i_, const
 		if (void_type_to_string_is_heap(type_)) free_string(item);
 	}
 
-	if (free_out == TRUE) free_string(out);
+	if (free_out) free_string(out);
 
 	return out_;
+}
+
+int index_of_array_int_internal(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_)
+{
+	int out = WRONG_I;
+
+	void* target = __assign_void(target_, type_);
+
+	for (size_t i = 0; i < size_; i++)
+	{
+		void* value = __get_array_value(array_, i, type_);
+
+		if (voids_are_equal(target, value, type_)) out = i;
+
+		free_void(value, type_);
+
+		if (out != WRONG_I) break;
+	}
+
+	free_void(target, type_);
+
+	return out;
 }

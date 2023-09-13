@@ -157,4 +157,6 @@ void* long_pointer_to_void(long*);
 
 void* double_pointer_to_void(double*);
 
+void* __type_to_void_internal(void* in_, const type type_);
+
 #endif
