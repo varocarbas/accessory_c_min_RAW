@@ -18,6 +18,8 @@ void run_all()
 	run_arrays();
 
 	run_structs();
+
+	run_io();
 }
 
 void run_strings()
@@ -844,6 +846,115 @@ void run_structs_wrong()
 
 	free_array(outputs, outputs_size, type_);
 	free_array(outputs2, outputs2_size, type_);
+
+	print_end_wrong();
+}
+
+void run_io()
+{
+	print_start("io");
+
+	output* output_ = __get_wrong_output();
+
+	char* string_h = __get_wrong_string();
+
+	type type_ = WRONG_TYPE;
+	size_t size = WRONG_SIZE;
+	boolean boolean_ = WRONG_BOOLEAN;
+
+	//1
+	int count = 1;
+
+	char* lines[] = { "1", "2", "3" };
+	size = 3;
+
+	type_ = STRING;
+	string_h = __assign_free_both_string(string_h, __array_to_string(lines, size, type_));
+
+	char* path = "test.txt";
+
+	boolean_ = write_file_lines(path, lines, size);
+
+	printf("%d -- write_file_lines: %s, %s (%s)\n\n", count, path, string_h, get_assessment(boolean_));
+
+	//2
+	count++;
+
+	type_ = OUTPUT;
+
+	output_ = __assign_free_both_void(output_, __read_file_lines(path), type_);
+
+	string_h = __assign_free_both_string(string_h, __output_to_string(output_));
+
+	boolean_ = (output_variable_is_ok(output_) && (output_->_type == STRING) && arrays_are_equal(lines, size, output_->_variable, output_->_size, output_->_type));
+
+	printf("%d -- __read_file_lines: %s -> %s (%s)\n\n", count, path, string_h, get_assessment(boolean_));
+
+	//3
+	count++;
+
+	boolean_ = delete_file(path);
+
+	printf("%d -- delete_file: %s (%s)\n\n", count, path, get_assessment(boolean_));
+
+	run_io_wrong();
+
+	free_string(string_h);
+
+	free_output(output_);
+
+	print_end("io");
+}
+
+void run_io_wrong()
+{
+	print_start_wrong();
+
+	output* output_ = __get_wrong_output();
+
+	char* string_h = __get_wrong_string();
+
+	type type_ = WRONG_TYPE;
+	size_t size = WRONG_SIZE;
+	boolean boolean_ = WRONG_BOOLEAN;
+
+	//1
+	int count = 1;
+
+	char** lines = get_wrong_array();
+
+	type_ = STRING;
+	string_h = __assign_free_both_string(string_h, __array_to_string(lines, size, type_));
+
+	char* path = WRONG_STRING;
+
+	boolean_ = write_file_lines(path, lines, size);
+
+	printf("%d -- write_file_lines (wrong): %s, %s (%s)\n\n", count, path, string_h, get_assessment(!boolean_));
+
+	//2
+	count++;
+
+	type_ = OUTPUT;
+
+	output_ = __assign_free_both_void(output_, __read_file_lines(path), type_);
+
+	string_h = __assign_free_both_string(string_h, __output_to_string(output_));
+
+	boolean_ = !output_variable_is_ok(output_);
+
+	printf("%d -- __read_file_lines (wrong): %s -> %s (%s)\n\n", count, path, string_h, get_assessment(boolean_));
+
+	//3
+	count++;
+
+	boolean_ = delete_file(path);
+
+	printf("%d -- delete_file: %s (%s)\n\n", count, path, get_assessment(!boolean_));
+
+	free_string(string_h);
+
+	free_output(output_);
 
 	print_end_wrong();
 }

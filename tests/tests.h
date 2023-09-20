@@ -19,6 +19,10 @@ void run_structs();
 
 void run_structs_wrong();
 
+void run_io();
+
+void run_io_wrong();
+
 char* get_assessment(boolean);
 
 void print_start(char*);

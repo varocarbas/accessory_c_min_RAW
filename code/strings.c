@@ -79,7 +79,59 @@ char* __trim_string(char* in_)
 	return (length > WRONG_SIZE ? __trim_string_internal(in_, length) : __get_wrong_string());
 }
 
+char* __resize_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || length == new_length_) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, FALSE);
+}
+
+char* __resize_free_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || length == new_length_) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, TRUE);
+}
+
+char* __shrink_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || new_length_ >= length) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, FALSE);
+}
+
+char* __shrink_free_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || new_length_ >= length) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, TRUE);
+}
+
+char* __embiggen_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || new_length_ <= length) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, FALSE);
+}
+
+char* __embiggen_free_string(char* in_, const size_t new_length_)
+{
+	size_t length = get_string_length_internal(in_, FALSE);
+	if (length == WRONG_SIZE || new_length_ <= length) length = WRONG_SIZE;
+
+	return __shrink_embiggen_string_internal(in_, length, new_length_, TRUE);
+}
+
 char* __substring(char* in_, const size_t start_i_, const size_t length_) { return _substring_internal(__initialise_string(length_), in_, start_i_, length_, TRUE); }
+
+char* __add_to_string(char* main_, char* addition_) { return __add_to_string_internal(main_, addition_, FALSE); }
+
+char* __add_to_free_string(char* main_, char* addition_) { return __add_to_string_internal(main_, addition_, TRUE); }
 
 char* __concatenate_strings(char** ins_, const size_t tot_) { return __concatenate_strings_internal(ins_, tot_, WRONG_STRING); }
 
@@ -123,6 +175,8 @@ char* __string_to_upper(char* in_)
 
 	return (length > WRONG_SIZE ? __string_to_lower_upper_internal(in_, length, FALSE) : __get_wrong_string());
 }
+
+boolean string_contains(char* needle_, char* haystack_) { return ((string_is_ok(needle_) && string_is_ok(haystack_)) ? string_contains_internal(needle_, haystack_, DEFAULT_STRINGS_CONTAINS_NORMALISE) : FALSE); }
 
 output* __index_of_string(char* needle_, char* haystack_, const size_t start_i_)
 {
@@ -379,6 +433,23 @@ size_t* __trim_string_start_length_internal(char* in_, const size_t length_)
 	return out;
 }
 
+char* __shrink_embiggen_string_internal(char* in_, const size_t length_, const size_t new_length_, const boolean free_in_)
+{
+	char* out;
+
+	if (length_ == WRONG_SIZE || new_length_ == WRONG_SIZE) out = __assign_string(in_);
+	else
+	{
+		out = __initialise_string(new_length_);
+
+		for (size_t i = 0; i < new_length_; i++) { out[i] = (i < length_ ? in_[i] : WRONG_CHAR); }
+	}
+
+	if (free_in_) free_string(in_);
+
+	return out;
+}
+
 char* _substring_internal(char* out_, char* in_, const size_t start_i_, const size_t length_, const boolean is_heap_)
 {
 	size_t length0 = get_string_length_internal(in_, FALSE);
@@ -406,6 +477,15 @@ char* substring_common_internal(char* out_, char* in_, const size_t start_i_, co
 	}
 
 	return add_string_termination_internal(out_, length_);
+}
+
+char* __add_to_string_internal(char* main_, char* addition_, const boolean free_main_)
+{
+	char* out = __concatenate_two_strings(main_, addition_);
+
+	if (free_main_) free_string(main_);
+
+	return out;
 }
 
 char* __concatenate_two_strings_internal(char* in1_, const size_t length1_, char* in2_, const size_t length2_)
@@ -489,6 +569,8 @@ char* __string_to_lower_upper_internal(char* in_, const size_t length_, const bo
 
 	return add_string_termination_internal(out, length_);
 }
+
+boolean string_contains_internal(char* needle_, char* haystack_, boolean normalise_) { return (index_of_string_int_internal(needle_, haystack_, 0, normalise_) > WRONG_I); }
 
 int index_of_string_int_internal(char* needle_, char* haystack_, const size_t start_i_, const boolean normalise_)
 {

@@ -17,6 +17,8 @@ boolean error_warning_is_ok(error_warning*);
 
 boolean error_warnings_are_equal(error_warning*, error_warning*);
 
+void print_error_warning(error_warning*);
+
 char* __error_warning_to_string(error_warning*);
 
 error_warning* __get_new_error_warning_internal(type_error, type_warning, boolean, void*);

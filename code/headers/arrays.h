@@ -31,7 +31,11 @@ boolean array_is_ok(void*, size_t, type);
 
 boolean arrays_are_equal(void*, size_t, void*, size_t, type);
 
-void* __resize_array(void*, size_t, size_t, type, boolean);
+void* __add_to_array(void*, size_t, void*, size_t, type, boolean);
+
+void* __resize_array(void*, size_t, size_t, type);
+
+void* __resize_free_array(void*, size_t, size_t, type);
 
 void* __shrink_array(void*, size_t, type);
 
@@ -107,6 +111,8 @@ void print_array(void*, size_t, type);
 
 char* __array_to_string(void*, size_t, type);
 
+boolean array_contains(void*, void*, size_t, type);
+
 output* __index_of_array(void*, void*, size_t, type, size_t);
 
 int index_of_array_int(void*, void*, size_t, type, size_t);
@@ -126,6 +132,8 @@ void* __get_wrong_array_free_internal(void*, void*, size_t, type, boolean, boole
 boolean array_is_ok_internal(void*, type);
 
 boolean array_is_ok_min_internal(void*);
+
+void* __add_to_array_internal(void*, size_t, void*, size_t, type, boolean);
 
 void* _update_array_internal(void*, void*, size_t, type, boolean);
 
@@ -148,6 +156,8 @@ void print_array_start_end_internal(boolean);
 void print_array_item_internal(size_t, size_t, void*, char*, type);
 
 char* __array_to_string_internal(char*, void*, size_t, type, boolean);
+
+boolean array_contains_internal(void*, void*, size_t, type);
 
 int index_of_array_int_internal(void*, void*, size_t, type, size_t);
 

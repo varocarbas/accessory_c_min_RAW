@@ -58,7 +58,27 @@ boolean arrays_are_equal(void* in1_, const size_t size1_, void* in2_, const size
 	return out;
 }
 
-void* __resize_array(void* in_, const size_t size_, const size_t new_size_, const type type_, const boolean free_in_) { return (size_ != new_size_ ? __shrink_embiggen_array_internal(in_, new_size_, type_, free_in_, size_, (new_size_ < size_)) : __assign_array(in_, size_, type_)); }
+void* __add_to_array(void* main_, const size_t main_size_, void* addition_, const size_t addition_size_, const type type_, const boolean free_main_)
+{
+	void* out;
+
+	boolean main_is_ok = array_is_ok(main_, main_size_, type_);
+	boolean addition_is_ok = array_is_ok(addition_, addition_size_, type_);
+
+	if (main_is_ok && addition_is_ok) out = __add_to_array_internal(main_, main_size_, addition_, addition_size_, type_, free_main_);
+	else
+	{
+		if (main_is_ok) out = __assign_array(main_, main_size_, type_);
+		else if (addition_is_ok) out = __assign_array(addition_, addition_size_, type_);
+		else out = __get_wrong_array();
+	}
+
+	return out;
+}
+
+void* __resize_array(void* in_, const size_t size_, const size_t new_size_, const type type_) { return (size_ != new_size_ ? __shrink_embiggen_array_internal(in_, new_size_, type_, FALSE, size_, (new_size_ < size_)) : __assign_array(in_, size_, type_)); }
+
+void* __resize_free_array(void* in_, const size_t size_, const size_t new_size_, const type type_) { return (size_ != new_size_ ? __shrink_embiggen_array_internal(in_, new_size_, type_, TRUE, size_, (new_size_ < size_)) : __assign_array(in_, size_, type_)); }
 
 void* __shrink_array(void* in_, const size_t new_size_, const type type_) { return __shrink_embiggen_array_internal(in_, new_size_, type_, FALSE, WRONG_SIZE, TRUE); }
 
@@ -136,6 +156,8 @@ void print_array(void* in_, const size_t size_, const type type_)
 }
 
 char* __array_to_string(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) ? _print_array_to_string_internal(in_, size_, type_, FALSE) : __get_wrong_string()); }
+
+boolean array_contains(void* target_, void* array_, const size_t size_, const type type_) { return ((void_type_is_ok(target_, type_) && array_is_ok_internal(array_, type_)) ? array_contains_internal(target_, array_, size_, type_) : FALSE); }
 
 output* __index_of_array(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_)
 {
@@ -252,6 +274,28 @@ boolean array_is_ok_internal(void* in_, const type type_) { return (array_is_ok_
 
 boolean array_is_ok_min_internal(void* in_) { return (in_ != get_wrong_array()); }
 
+void* __add_to_array_internal(void* main_, const size_t main_size_, void* addition_, const size_t addition_size_, const type type_, const boolean free_main_)
+{
+	size_t size = main_size_ + addition_size_;
+
+	void* out = __shrink_embiggen_array_internal(main_, size, type_, free_main_, main_size_, FALSE);
+
+	size_t i2 = 0;
+
+	for (size_t i = main_size_; i < size; i++)
+	{
+		void* value = __get_array_value(addition_, i2, type_);
+
+		out = _update_array(out, value, i2, type_);
+
+		free_void(value, type_);
+
+		i2++;
+	}
+
+	return out;
+}
+
 void* _update_array_internal(void* array_, void* value_, const size_t i_, const type type_, const boolean is_wrong_)
 {
 	if (type_array_is_2d_pointer(type_)) array_ = (is_wrong_ ? __initialise_2d_pointer_array_item_internal(array_, i_, type_, DEFAULT_ARRAYS_ITEM_SIZE) : __update_2d_pointer_array_internal(array_, value_, i_, type_));
@@ -266,17 +310,14 @@ void* __shrink_embiggen_array_internal(void* in_, const size_t new_size_, const 
 	{
 		if (free_in_) free_array(in_, orig_size_, type_);
 
-		return __get_wrong_array();
+		return __assign_array(in_, orig_size_, type_);
 	}
 
 	void* out = __initialise_array(new_size_, type_);
 
-	size_t orig_max_i = orig_size_ - 1;
-
 	for (size_t i = 0; i < new_size_; i++)
 	{
-		if (i > orig_max_i) out = _update_array_wrong(out, i, type_);
-		else
+		if (i < orig_size_)
 		{
 			void* value = __get_array_value(in_, i, type_);
 
@@ -284,6 +325,7 @@ void* __shrink_embiggen_array_internal(void* in_, const size_t new_size_, const 
 
 			free_void(value, type_);
 		}
+		else out = _update_array_wrong(out, i, type_);
 	}
 
 	if (free_in_) free_array(in_, orig_size_, type_);
@@ -430,6 +472,8 @@ char* __array_to_string_internal(char* out_, void* item_, const size_t i_, const
 
 	return out_;
 }
+
+boolean array_contains_internal(void* target_, void* array_, const size_t size_, const type type_) { return (index_of_array_int_internal(target_, array_, size_, type_, 0) > WRONG_I); }
 
 int index_of_array_int_internal(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_)
 {

@@ -50,6 +50,11 @@ boolean error_warnings_are_equal(error_warning* in1_, error_warning* in2_)
 	return out;
 }
 
+void print_error_warning(error_warning* in_)
+{
+	if (error_warning_is_ok_internal(in_, FALSE)) print(in_, ERROR_WARNING);
+}
+
 char* __error_warning_to_string(error_warning* in_) { return (void_type_is_ok(in_, ERROR_WARNING) ? __assign_string(in_->_message) : __get_wrong_string()); }
 
 error_warning* __get_new_error_warning_internal(const type_error error_, const type_warning warning_, const boolean is_error_, void* further_)

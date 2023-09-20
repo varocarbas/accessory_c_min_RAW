@@ -6,8 +6,10 @@ char* error_to_string(const type_error type_)
 {
 	char* out;
 
-	if (type_ == ERROR_WRONG_INPUTS) out = "WRONG_INPUTS";
-	else if (type_ == ERROR_WRONG_CONVERSION) out = "WRONG_CONVERSION";
+	if (type_ == ERROR_WRONG_INPUTS) out = "the inputs are invalid";
+	else if (type_ == ERROR_WRONG_CONVERSION) out = "there was an error while performing the type conversion";
+	else if (type_ == ERROR_WRONG_FILE) out = "the file is invalid";
+	else if (type_ == ERROR_UNSUPPORTED_OS) out = "the current OS isn't supported";
 	else out = WRONG_STRING;
 
 	return out;

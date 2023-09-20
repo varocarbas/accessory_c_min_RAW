@@ -5,4 +5,10 @@
 
 os OS;
 
+boolean os_is_unix();
+
+boolean os_is_posix();
+
+char* os_to_string();
+
 #endif

@@ -41,7 +41,23 @@ boolean strings_are_equal(char*, char*);
 
 char* __trim_string(char*);
 
+char* __resize_string(char*, size_t);
+
+char* __resize_free_string(char*, size_t);
+
+char* __shrink_string(char*, size_t);
+
+char* __shrink_free_string(char*, size_t);
+
+char* __embiggen_string(char*, size_t);
+
+char* __embiggen_free_string(char*, size_t);
+
 char* __substring(char*, size_t, size_t);
+
+char* __add_to_string(char*, char*);
+
+char* __add_to_free_string(char*, char*);
 
 char* __concatenate_strings(char**, size_t);
 
@@ -52,6 +68,8 @@ char* __normalise_string(char*);
 char* __string_to_lower(char*);
 
 char* __string_to_upper(char*);
+
+boolean string_contains(char*, char*);
 
 output* __index_of_string(char*, char*, size_t);
 
@@ -89,9 +107,13 @@ char* __trim_string_internal(char*, size_t);
 
 size_t* __trim_string_start_length_internal(char*, size_t);
 
+char* __shrink_embiggen_string_internal(char*, size_t, size_t, boolean);
+
 char* _substring_internal(char*, char*, size_t, size_t, boolean);
 
 char* substring_common_internal(char*, char*, size_t, size_t, size_t);
+
+char* __add_to_string_internal(char*, char*, boolean);
 
 char* __concatenate_two_strings_internal(char*, size_t, char*, size_t);
 
@@ -106,6 +128,8 @@ void print_string_internal(char*, boolean);
 char* __normalise_string_internal(char*, size_t);
 
 char* __string_to_lower_upper_internal(char*, size_t, boolean);
+
+boolean string_contains_internal(char*, char*, boolean);
 
 int index_of_string_int_internal(char*, char*, size_t, boolean);
 

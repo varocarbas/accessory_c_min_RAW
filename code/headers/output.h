@@ -59,6 +59,8 @@ long get_output_long_variable(output*, boolean);
 
 double get_output_double_variable(output*, boolean);
 
+void print_output(output*);
+
 char* __output_to_string(output*);
 
 char* _output_variable_to_string(output*);

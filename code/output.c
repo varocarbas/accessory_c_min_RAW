@@ -204,6 +204,11 @@ double get_output_double_variable(output* in_, const boolean free_in_)
 	return out;
 }
 
+void print_output(output* in_)
+{
+	if (output_is_ok_internal(in_, FALSE)) print(in_, OUTPUT);
+}
+
 char* __output_to_string(output* in_)
 {
 	char* out;
