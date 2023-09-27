@@ -117,7 +117,7 @@ output* __read_file_lines(char* path_)
 
 	close_file(file);
 
-	if (new_size == 0) lines = __assign_free_both_array(lines, __get_wrong_array(), WRONG_SIZE, type_);
+	if (new_size == 0) lines = __assign_free_both_array(lines, __get_wrong_array(), new_size, type_);
 	else if (new_size < size) lines = __shrink_free_array(lines, new_size, type_, size);
 
 	return __get_new_output_array(lines, new_size, type_, TRUE);
@@ -210,7 +210,7 @@ char* __get_path_internal(char** items_, const size_t size_, const boolean is_di
 {
 	size_t length = (DEFAULT_IO_NAME_SIZE + 1) * size_;
 
-	char* out = __initialise_string(length);
+	char* out;
 
 	size_t length2 = 0;
 	size_t max_i = size_ - 1;
@@ -222,10 +222,7 @@ char* __get_path_internal(char** items_, const size_t size_, const boolean is_di
 		char* item = __assign_string(items_[i]);
 		if (is_dir_ || i < max_i) item = __add_to_free_string(item, separator);
 
-		length2 += get_string_length_internal(item, FALSE);
-		if (length2 > length) out = __embiggen_free_string(out, length2);
-
-		out = __add_to_free_string(out, item);
+		out = (i == 0 ? __assign_string(item) : __add_to_free_string(out, item));
 
 		free_string(item);
 	}

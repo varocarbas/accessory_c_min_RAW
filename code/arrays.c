@@ -157,7 +157,7 @@ void print_array(void* in_, const size_t size_, const type type_)
 
 char* __array_to_string(void* in_, const size_t size_, const type type_) { return (array_is_ok(in_, size_, type_) ? _print_array_to_string_internal(in_, size_, type_, FALSE) : __get_wrong_string()); }
 
-boolean array_contains(void* target_, void* array_, const size_t size_, const type type_) { return ((void_type_is_ok(target_, type_) && array_is_ok_internal(array_, type_)) ? array_contains_internal(target_, array_, size_, type_) : FALSE); }
+boolean array_contains(void* target_, void* array_, const size_t size_, const type type_) { return (array_is_ok(array_, size_, type_) ? array_contains_internal(target_, array_, size_, type_) : FALSE); }
 
 output* __index_of_array(void* target_, void* array_, const size_t size_, const type type_, const size_t start_i_)
 {

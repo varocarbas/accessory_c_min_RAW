@@ -495,6 +495,9 @@ char* __concatenate_two_strings_internal(char* in1_, const size_t length1_, char
 	char* out = __initialise_string(length0);
 	if (!pointer_is_ok(out)) return __get_wrong_string();
 
+	char* in1 = __assign_string(in1_);
+	char* in2 = __assign_string(in2_);
+
 	size_t count = 0;
 	size_t i2 = 0;
 
@@ -504,11 +507,14 @@ char* __concatenate_two_strings_internal(char* in1_, const size_t length1_, char
 
 		for (size_t i = 0; i < (count == 1 ? length1_ : length2_); i++)
 		{
-			out[i2] = (count == 1 ? in1_[i] : in2_[i]);
+			out[i2] = (count == 1 ? in1[i] : in2[i]);
 
 			i2++;
 		}
 	}
+
+	free_string(in1);
+	free_string(in2);
 
 	return add_string_termination_internal(out, length0);
 }

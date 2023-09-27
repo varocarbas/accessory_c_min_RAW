@@ -857,6 +857,8 @@ void run_io()
 	output* output_ = __get_wrong_output();
 
 	char* string_h = __get_wrong_string();
+	char* string2_h = __get_wrong_string();
+	char* string3_h = __get_wrong_string();
 
 	type type_ = WRONG_TYPE;
 	size_t size = WRONG_SIZE;
@@ -880,6 +882,13 @@ void run_io()
 	//2
 	count++;
 
+	boolean_ = file_exists(path);
+
+	printf("%d -- file_exists: %s (%s)\n\n", count, path, get_assessment(boolean_));
+
+	//3
+	count++;
+
 	type_ = OUTPUT;
 
 	output_ = __assign_free_both_void(output_, __read_file_lines(path), type_);
@@ -890,16 +899,39 @@ void run_io()
 
 	printf("%d -- __read_file_lines: %s -> %s (%s)\n\n", count, path, string_h, get_assessment(boolean_));
 
-	//3
+	//4
 	count++;
 
 	boolean_ = delete_file(path);
 
 	printf("%d -- delete_file: %s (%s)\n\n", count, path, get_assessment(boolean_));
 
+	//5
+	count++;
+
+	char* items[] = { "dir1", "dir2" };
+	size = 2;
+
+	char* file = "file2.txt";
+
+	string_h = __assign_free_both_string(string_h, __get_dir_path(items, size));
+
+	char* items2[] = { "dir1", "dir2", file };
+	size = 3;
+
+	string2_h = __assign_free_both_string(string2_h, __get_file_path(items2, size));
+
+	string3_h = __assign_free_both_string(string3_h, __add_to_string(string_h, file));
+
+	boolean_ = strings_are_equal_internal(string2_h, string3_h, FALSE);
+
+	printf("%d -- __get_dir_path/__get_file_path: %s, %s (%s)\n\n", count, string_h, string2_h, get_assessment(boolean_));
+
 	run_io_wrong();
 
 	free_string(string_h);
+	free_string(string2_h);
+	free_string(string3_h);
 
 	free_output(output_);
 
@@ -913,6 +945,8 @@ void run_io_wrong()
 	output* output_ = __get_wrong_output();
 
 	char* string_h = __get_wrong_string();
+	char* string2_h = __get_wrong_string();
+	char* string3_h = __get_wrong_string();
 
 	type type_ = WRONG_TYPE;
 	size_t size = WRONG_SIZE;
@@ -935,6 +969,13 @@ void run_io_wrong()
 	//2
 	count++;
 
+	boolean_ = file_exists(path);
+
+	printf("%d -- file_exists (wrong): %s (%s)\n\n", count, path, get_assessment(!boolean_));
+
+	//3
+	count++;
+
 	type_ = OUTPUT;
 
 	output_ = __assign_free_both_void(output_, __read_file_lines(path), type_);
@@ -945,14 +986,36 @@ void run_io_wrong()
 
 	printf("%d -- __read_file_lines (wrong): %s -> %s (%s)\n\n", count, path, string_h, get_assessment(boolean_));
 
-	//3
+	//4
 	count++;
 
 	boolean_ = delete_file(path);
 
-	printf("%d -- delete_file: %s (%s)\n\n", count, path, get_assessment(!boolean_));
+	printf("%d -- delete_file (wrong): %s (%s)\n\n", count, path, get_assessment(!boolean_));
+
+	//5
+	count++;
+
+	char** items = get_wrong_array();
+	size = WRONG_SIZE;
+
+	char* file = WRONG_STRING;
+
+	string_h = __assign_free_both_string(string_h, __get_dir_path(items, size));
+
+	char** items2 = get_wrong_array();
+
+	string2_h = __assign_free_both_string(string2_h, __get_file_path(items2, size));
+
+	string3_h = __assign_free_both_string(string3_h, __add_to_string(string_h, file));
+
+	boolean_ = strings_are_equal_internal(string2_h, string3_h, FALSE);
+
+	printf("%d -- __get_dir_path/__get_file_path (wrong): %s, %s (%s)\n\n", count, string_h, string2_h, get_assessment(boolean_));
 
 	free_string(string_h);
+	free_string(string2_h);
+	free_string(string3_h);
 
 	free_output(output_);
 
